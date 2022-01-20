@@ -132,8 +132,6 @@ void printSymTab(){ // Printa a tabela se símbolos
     int i;
     fprintf(listing,"  Nome             Escopo          TipoID         TipoDado         Número Linha\n");
     fprintf(listing,"--------        ------------    ------------    ------------    --------------------\n");
-    fprintf(listing,"input           global          funcao          inteiro         --                \n");
-    fprintf(listing,"output          global          funcao          void            --                \n");
     for (i=0;i<SIZE;++i){ 
         if (hashTable[i] != NULL){ 
             BucketList l = hashTable[i];

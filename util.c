@@ -189,3 +189,13 @@ void printTree(TreeNode * tree, FILE * f_out){ // Print da arvore gerada (recurs
 	}
 	UNINDENT;
 }
+
+int syscall(char * func){
+	const char * syscallList[] = {"input", "output", "preempON", "preempOFF", "memCtrl", "hdToInst", "hdToReg", "regToHd"};
+	int size = sizeof(syscallList) / sizeof(syscallList[0]);
+	for(int i = 0; i < size; i++){
+		if(strcmp(func, syscallList[i]) == 0)
+			return 1;
+	}
+	return 0;
+}

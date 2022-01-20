@@ -202,7 +202,7 @@ void assemblyInsert(InstructionKind instKind, Register rd, Register rs, Register
     newInst.lineNo = lineNo;
     newInst.type = tp;
     newInst.lineKind = lineKind;
-    newInst.label = malloc(strlen(lab) * sizeof(char));
+    newInst.label = malloc((strlen(lab)+1) * sizeof(char));
     strcpy(newInst.label,lab);
     InstructionList newAssembly = (InstructionList) malloc(sizeof(struct InstructionListRec));
     newAssembly->inst = newInst;
@@ -264,6 +264,33 @@ void assemblyGen_CALL(Quad q){                                                  
     }
     else if(strcmp(q.arg2,"output") == 0){                                                  // Se for a funcao output
         assemblyInsert(OUT, $a0, 0, 0, 0, lineNo, R, Inst, "");                             // Insere-se a instrucao OUT passando o argumento a ser impresso na saida
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        argRegister = $a0;                                                                  // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+    }
+    else if(strcmp(q.arg2,"preempON") == 0){                                                // Se for a funcao preempON
+        assemblyInsert(PREEMPON, 0, 0, 0, 0, lineNo, O, Inst, "");                          // Insere-se a instrução PREEMPON, para iniciar a contagem do timer de quantum
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+    }
+    else if(strcmp(q.arg2,"preempOFF") == 0){                                               // Se for a funcao preempOFF
+        assemblyInsert(PREEMPOFF, 0, 0, 0, 0, lineNo, O, Inst, "");                         // Insere-se a instrução PREEMPOFF, para finalizar a contagem do timer de quantum
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+    }
+    else if(strcmp(q.arg2,"memCtrl") == 0){                                                 // Se for a funcao memCtrl
+        assemblyInsert(MEMCTRL, 0, 0, 0, 0, lineNo, O, Inst, "");                           // Insere-se a instrução MEMCTRL, para mudar a fonte das instrucoes da BIOS para a mem de inst
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+    }
+    else if(strcmp(q.arg2,"hdToInst") == 0){                                                // Se for a funcao hdToInst
+        assemblyInsert(HDTOINST, $a0, $a1, $a2, 0, lineNo, R, Inst, "");                    // Insere-se a instrução HDTOINST, para escrever do HD na memória de instruções
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        argRegister = $a0;                                                                  // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+    }
+    else if(strcmp(q.arg2,"hdToReg") == 0){                                                 // Se for a funcao hdToReg
+        assemblyInsert(HDTOREG, $a0, $a1, $a2, 0, lineNo, R, Inst, "");                     // Insere-se a instrução HDTOREG, para escrever do HD no banco de registradores
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        argRegister = $a0;                                                                  // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+    }
+    else if(strcmp(q.arg2,"regToHd") == 0){                                                 // Se for a funcao regToHd
+        assemblyInsert(REGTOHD, $a0, $a1, $a2, 0, lineNo, R, Inst, "");                     // Insere-se a instrução REGTOHD, para escrever dp banco de registradores no HD
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
         argRegister = $a0;                                                                  // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
@@ -500,6 +527,11 @@ void assemblyGen_HLT(Quad q){                               // Tratamento da qua
     lineNo++;                                               // Soma-se o numero da linha de instrucao
 }
 
+void assemblyGen_FINALIZE(Quad q){                              // Tratamento da quadrupla FINALIZE
+    assemblyInsert(FINALIZE, 0, 0, 0, 0, lineNo, O, Inst, "");  // Insere-se a instrucao FINALIZE que sinaliza o termino de um programa
+    lineNo++;                                                   // Soma-se o numero da linha de instrucao
+}
+
 void printAssembly(FILE * assemblyFile){ // Funcao para print do codigo Assembly gerado
     InstructionList i = instListHead;
     while(i != NULL){
@@ -581,6 +613,27 @@ void printAssembly(FILE * assemblyFile){ // Funcao para print do codigo Assembly
                     case HLT:
                         fprintf(assemblyFile, "%d %s", i->inst.lineNo, "HLT");
                         break;
+                    case FINALIZE:
+                        fprintf(assemblyFile, "%d %s\n", i->inst.lineNo, "FINALIZE");
+                        break;
+                    case PREEMPON:
+                        fprintf(assemblyFile, "%d %s\n", i->inst.lineNo, "PREEMPON");
+                        break;
+                    case PREEMPOFF:
+                        fprintf(assemblyFile, "%d %s\n", i->inst.lineNo, "PREEMPOFF");
+                        break;
+                    case MEMCTRL:
+                        fprintf(assemblyFile, "%d %s\n", i->inst.lineNo, "MEMCTRL");
+                        break;
+                    case HDTOINST:
+                        fprintf(assemblyFile, "%d %s %s, %s, %s\n", i->inst.lineNo, "HDTOINST", registerToString(i->inst.rd), registerToString(i->inst.rs), registerToString(i->inst.rt));
+                        break;
+                    case HDTOREG:
+                        fprintf(assemblyFile, "%d %s %s, %s, %s\n", i->inst.lineNo, "HDTOREG", registerToString(i->inst.rd), registerToString(i->inst.rs), registerToString(i->inst.rt));
+                        break;
+                    case REGTOHD:
+                        fprintf(assemblyFile, "%d %s %s, %s, %s\n", i->inst.lineNo, "REGTOHD", registerToString(i->inst.rd), registerToString(i->inst.rs), registerToString(i->inst.rt));
+                        break;
                     default:
                         break;
                 }
@@ -647,6 +700,7 @@ InstructionList assemblyGen(QuadList head){
             q = q->next;
         }
         else if(strcmp(q->quad.op,"HLT") == 0) assemblyGen_HLT(q->quad);
+        else if(strcmp(q->quad.op,"FINALIZE") == 0) assemblyGen_FINALIZE(q->quad);
         q = q->next;
     }
 

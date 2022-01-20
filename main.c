@@ -20,8 +20,12 @@ void Scanner();
 
 int main(int argc, char * argv[])
 {
-    if(argc != 2){
-        printf("Uso: %s <nomeDoArquivo.extensao>\n", argv[0]);
+    if(argc != 3){
+        printf("Uso: %s <nomeDoArquivo.extensao> <BIOS ou HD>\n", argv[0]);
+        return 0;
+    }
+    if(strcmp(argv[2], "BIOS") && strcmp(argv[2], "HD")){
+        printf("As unicas opcoes de modulos sao BIOS ou HD\n");
         return 0;
     }
     source = fopen(argv[1], "r");
@@ -73,7 +77,8 @@ int main(int argc, char * argv[])
                     printf("\nLista de Instrucoes Assembly geradas, salva em OutAssemblyList.\n");
 
                     printf("\nGerando Codigo Executavel...\n");
-                    binaryGen(assemblyList);
+                    char * dst = argv[2]; 
+                    binaryGen(assemblyList, dst);
                     printf("\nCodigo Executavel gerado, salvo em OutBinaryList.\n");
 
                     printf("\n------------------------------------------------------\n");

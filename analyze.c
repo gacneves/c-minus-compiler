@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "util.h"
 #include "symtab.h"
 #include "analyze.h"
 
@@ -102,8 +103,8 @@ static void insertNode( TreeNode * t){ // Funcao para insercao na tabela de simb
                     break;
 
                 case callX:
-                    // Garante que nao ocorra erro de funcao nao declarada para a funcao output e input e verifica se outras funcoes nao foram declaradas
-                    if ((strcmp(t->attr.name, "input") != 0 && strcmp(t->attr.name, "output") != 0) && (!st_lookup(t->attr.name, t->attr.scope) && !st_lookup(t->attr.name, "global")))
+                    // Garante que nao ocorra erro de funcao nao declarada para as syscalls e verifica se outras funcoes nao foram declaradas
+                    if (!syscall(t->attr.name) && (!st_lookup(t->attr.name, t->attr.scope) && !st_lookup(t->attr.name, "global")))
                         typeError(t, "Funcao nao declarada");
                     else
                         st_insert(t->attr.name,t->lineno, t->attr.scope, "chamada", "-------", paramCounter(t), 1); // Insere chamada de funcao na tabela
@@ -203,13 +204,16 @@ static void checkNode(TreeNode * t){ // Checa os tipos
                     break;
                     
                 case callX:
-                    if(strcmp(t->attr.name, "input") == 0 && st_lookup_paramQt(t->attr.name, t->attr.scope) != 0){ // Erro input com parametro
+                    if(strcmp(t->attr.name, "output") == 0 && st_lookup_paramQt(t->attr.name, t->attr.scope) != 1){ // Erro output com parametro conflitante
                         typeError(t, "Quantidade de parametros diferente da definicao");
                     }
-                    else if(strcmp(t->attr.name, "output") == 0 && st_lookup_paramQt(t->attr.name, t->attr.scope) != 1) { // Erro output com parametro conflitante
+                    else if((strcmp(t->attr.name, "hdToInst") == 0 || strcmp(t->attr.name, "hdToReg") == 0 || strcmp(t->attr.name, "regToHd") == 0) && st_lookup_paramQt(t->attr.name, t->attr.scope) != 3){
                         typeError(t, "Quantidade de parametros diferente da definicao");
                     }
-			        else if( (strcmp(t->attr.name, "input") != 0 && strcmp(t -> attr.name, "output") != 0) && (st_lookup_paramQt(t->attr.name, t->attr.scope) != st_lookup_paramQt(t->attr.name, "global"))){ // Erro funcao com parametro diferente da declaracao
+                    else if(strcmp(t->attr.name, "output") != 0 && strcmp(t->attr.name, "hdToInst") != 0 && strcmp(t->attr.name, "hdToReg") != 0 && strcmp(t->attr.name, "regToHd") != 0 && syscall(t->attr.name) && st_lookup_paramQt(t->attr.name, t->attr.scope) != 0) { // Erro output com parametro conflitante
+                        typeError(t, "Quantidade de parametros diferente da definicao");
+                    }
+			        else if(!syscall(t->attr.name) && (st_lookup_paramQt(t->attr.name, t->attr.scope) != st_lookup_paramQt(t->attr.name, "global"))){ // Erro funcao com parametro diferente da declaracao
 				        typeError(t, "Quantidade de parametros diferente da definicao");
 			        }
 		            break;

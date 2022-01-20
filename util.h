@@ -19,4 +19,7 @@ void printTree( TreeNode * , FILE *);
 // Seta os escopos das declaracoes
 void defEscopo(TreeNode*, char*);
 
+// Pesquisa as syscalls do sistema
+int syscall(char *);
+
 #endif

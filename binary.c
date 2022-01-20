@@ -3,8 +3,10 @@
 #include "symtab.h"
 
 BinaryList binListHead = NULL;                                      // Inicio da lista de instrucoes binarias
+int opCode;
+char * dstModule;
 
-void decimalToBinaryPrint(int number, int bitNo, FILE * binFile){   // Funcao que converte decimal em binario para print das instrucoes
+void decimalToBinaryPrint(int i, int number, int bitNo, FILE * binFile){   // Funcao que converte decimal em binario para print das instrucoes
     char * binary = malloc(bitNo * sizeof(char));                   // Char para representar o binario de tamanho bitsNo
     for(int i = bitNo - 1; i >= 0; i--, number = number / 2){       // Converte o numero decimal para binario, inserindo do fim da string ao comeco, dividindo o numero a ser convertido
         int bit = number % 2;                                       // Decide o nivel logico do bit atual
@@ -12,7 +14,10 @@ void decimalToBinaryPrint(int number, int bitNo, FILE * binFile){   // Funcao qu
     }
     binary[bitNo] = '\0';
 
-    fprintf(binFile,"%s",binary);
+    if(opCode == 1)
+        fprintf(binFile,"%s[%d] = 32'b%s", dstModule, i, binary);
+    else
+        fprintf(binFile,"_%s", binary);
     free(binary);                                                   
 }
 
@@ -61,38 +66,47 @@ void binaryGen_J_Type(Instruction inst){                                        
 }
 
 void printBinary(FILE * binFile){                                               // Funcao que printa as instrucao binarias
+    int i = 0;
+    opCode = 1;
     BinaryList b = binListHead;
     while(b != NULL){
         switch(b->bin.type){
             case R:
-                decimalToBinaryPrint(b->bin.opCode, 5, binFile);
-                decimalToBinaryPrint(b->bin.rd, 5, binFile);
-                decimalToBinaryPrint(b->bin.rs, 5, binFile);
-                decimalToBinaryPrint(b->bin.rt, 5, binFile);
-                decimalToBinaryPrint(0, 12, binFile);
+                decimalToBinaryPrint(i,b->bin.opCode, 5, binFile);
+                opCode = 0;
+                decimalToBinaryPrint(i,b->bin.rd, 5, binFile);
+                decimalToBinaryPrint(i,b->bin.rs, 5, binFile);
+                decimalToBinaryPrint(i,b->bin.rt, 5, binFile);
+                decimalToBinaryPrint(i,0, 12, binFile);
                 break;
             case I:
-                decimalToBinaryPrint(b->bin.opCode, 5, binFile);
-                decimalToBinaryPrint(b->bin.rd, 5, binFile);
-                decimalToBinaryPrint(b->bin.rs, 5, binFile);
-                decimalToBinaryPrint(b->bin.IMM, 17, binFile);
+                decimalToBinaryPrint(i,b->bin.opCode, 5, binFile);
+                opCode = 0;
+                decimalToBinaryPrint(i,b->bin.rd, 5, binFile);
+                decimalToBinaryPrint(i,b->bin.rs, 5, binFile);
+                decimalToBinaryPrint(i,b->bin.IMM, 17, binFile);
                 break;
             case JP:
-                decimalToBinaryPrint(b->bin.opCode, 5, binFile);
-                decimalToBinaryPrint(b->bin.IMM, 27, binFile);
+                decimalToBinaryPrint(i,b->bin.opCode, 5, binFile);
+                opCode = 0;
+                decimalToBinaryPrint(i,b->bin.IMM, 27, binFile);
                 break;
             case O:
-                decimalToBinaryPrint(b->bin.opCode, 5, binFile);
-                decimalToBinaryPrint(0, 27, binFile);
+                decimalToBinaryPrint(i,b->bin.opCode, 5, binFile);
+                opCode = 0;
+                decimalToBinaryPrint(i,0, 27, binFile);
                 break;
         }
-        fprintf(binFile,"\n");
+        fprintf(binFile,";\n");
         b = b->next;
+        i+=1;
+        opCode = 1;
     }
 }
 
-void binaryGen(InstructionList instListHead){                                                                               // Gerador de codigo binario
+void binaryGen(InstructionList instListHead, char * setDst){                                                                               // Gerador de codigo binario
     InstructionList i = instListHead;
+    dstModule = setDst;
 
     while(i != NULL){
         if(i->inst.lineKind == Inst){

@@ -344,7 +344,7 @@ QuadList codeGen(TreeNode * syntaxTree){
     nlabel = 0;
     globalSize = 0;
     cGen(syntaxTree);
-    quadInsert("HLT", "-", "-", "-");
+    quadInsert("FINALIZE", "-", "-", "-");
     FILE * codefile = fopen("outQuadList.output", "w+");
     printCode(codefile);
     fclose(codefile);

@@ -190,12 +190,43 @@ void printTree(TreeNode * tree, FILE * f_out){ // Print da arvore gerada (recurs
 	UNINDENT;
 }
 
+// Syscalls
+const char * syscallList[] = {"input", "output", "preempON", "preempOFF", "memCtrl", "hdToInst", "hdToReg", "regToHd", "storeVar", "setPC", "setRunningId", "halt"};
+const int syscallParamQtList[] = {0, 1, 0, 0, 0, 3, 3, 3, 3, 0, 1, 0};
+
+/*
+input(), retorna um valor inserido atraves das chaves do FPGA
+output(x), apresenta o valor x na saida
+preempON(), ativa a contagem de quantum do processador
+preempOFF(), desativa a contagem de quantum do processador
+memCtrl(), passa o controle do sistema da BIOS para a memoria de instrucao
+hdToInst(memAddr, trilhaHd, setorHd), salva no endereco memAddr da memoria de instrucao o conteudo do HD da trilha trilhaHd e setor setorHd
+hdToReg(regDst, trilhaHd, setorHd), salva no registrador regDst do banco de registrado o conteudo do HD da trilha trilhaHd e setor setorHd
+regToHd(regSrc, trilhaHd, setorHd), salva no endereco do HD da trilha trilhaHd e setor setorHd o conteudo do registrador regSrc
+storeVar(var, trilhaHd, setorHd), salva a variavel no HD na trilha trilhaHD e setor setorHD
+setPC(), seta o PC do processador com valor do registrador $pc
+setRunningId(id), seta o $id com o valor $id
+halt(), faz a parada do processador
+*/
+
 int syscall(char * func){
-	const char * syscallList[] = {"input", "output", "preempON", "preempOFF", "memCtrl", "hdToInst", "hdToReg", "regToHd"};
 	int size = sizeof(syscallList) / sizeof(syscallList[0]);
 	for(int i = 0; i < size; i++){
 		if(strcmp(func, syscallList[i]) == 0)
 			return 1;
+	}
+	return 0;
+}
+
+int syscallParamQt(char * func, int paramQt){
+	int size = sizeof(syscallList) / sizeof(syscallList[0]);
+	for(int i = 0; i < size; i++){
+		if(strcmp(func, syscallList[i]) == 0){
+			if(syscallParamQtList[i] == paramQt)
+				return 1;
+			else
+				return 0;
+		}
 	}
 	return 0;
 }

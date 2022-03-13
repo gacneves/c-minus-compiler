@@ -1,0 +1,169 @@
+/* Defines */
+int BLOCKSIZE; int PCREG;
+
+/* If the execution is preemptive */
+int preemptive; 
+
+/* Queue variables */
+int running; int next; int swap;
+
+/* Change context variables */
+int reg; int regInHD;
+
+/**
+ * If a process reach end of its execution, this function is called
+ */
+void processFinished(void)
+{
+    preempOFF();
+    setRunningId(0);
+    
+    /* If there is no process in queue */
+    if(next == 0)
+    {
+        halt();
+    }
+    
+    /* Get context of the next process in queue */
+    reg = 1;
+    regInHD = 1;
+    while (reg < 15)
+    {
+        hdToReg(reg, next, regInHD);
+        reg = reg + 1;
+        regInHD = regInHD + 1;
+    }
+
+    reg = 28;
+    while (reg < 32)
+    {
+        hdToReg(reg, next, regInHD);
+        reg = reg + 1;
+        regInHD = regInHD + 1;
+    }
+
+    /* Set queue and start execution */
+    running = next;
+    next = 0;
+    setRunningId(running);
+    hdToReg(PCREG, running, 0); /* This syscall gets the PC for the process */
+    if(preemptive == 1)
+    {
+        preempON();
+    }
+    setPC(); /* This syscall jumps to the content of the PCREG */
+}
+
+void outOfQuantum(void)
+{
+    preempOFF();
+    setRunningId(0);
+
+    /* PCREG has the next PC for the process when it is preempted */
+    regToHd(PCREG, running, 0);
+
+    /* Save context of current process */
+    reg = 1;
+    regInHD = 1;
+    while (reg < 15)
+    {
+        regToHd(reg, running, regInHD);
+        reg = reg + 1;
+        regInHD = regInHD + 1;
+    }
+
+    reg = 28;
+    while (reg < 32)
+    {
+        regToHd(reg, running, regInHD);
+        reg = reg + 1;
+        regInHD = regInHD + 1;
+    }
+
+    /* Get context of next process */
+    reg = 1;
+    regInHD = 1;
+    while (reg < 15)
+    {
+        hdToReg(reg, next, regInHD);
+        reg = reg + 1;
+        regInHD = regInHD + 1;
+    }
+
+    reg = 28;
+    while (reg < 32)
+    {
+        hdToReg(reg, next, regInHD);
+        reg = reg + 1;
+        regInHD = regInHD + 1;
+    }
+
+    /* Move first in queue to last */
+    swap = running;
+    running = next;
+    next = swap;
+
+    /* Resume execution */
+    setRunningId(running);
+    hdToReg(PCREG, running, 0); /* This syscall gets the PC for the process */
+    preempON();
+    setPC(); /* This syscall jumps to the content of the PCREG */
+}
+
+void main(void)
+{
+    int nextFreeMemBlock; int nextFreeMemAddr;
+    int firstP; int firstPSize; int secondP; int secondPSize;
+    int i;
+
+    /* Number of PC register */
+    PCREG = 27;
+
+    /* Memory block info */
+    nextFreeMemBlock = 3;
+    BLOCKSIZE = 256;
+
+    /* Process info (this will be in process table in HD) */
+    firstP = 1;
+    firstPSize = 34;
+    secondP = 2;
+    secondPSize = 34;
+
+    /* Load process 1 to block #3 in memories */
+    nextFreeMemAddr = nextFreeMemBlock * BLOCKSIZE;
+    storeVar(nextFreeMemAddr, firstP, 0);
+
+    i = 0;
+    while(i < firstPSize)
+    {
+        hdToInst(nextFreeMemAddr + i, firstP, i + 32);
+        i = i + 1;
+    }
+    nextFreeMemBlock = nextFreeMemBlock + 1;
+
+    /* Load process 2 to block #4 in memories */
+    nextFreeMemAddr = nextFreeMemBlock * BLOCKSIZE;
+    storeVar(nextFreeMemAddr, secondP, 0);
+
+    i = 0;
+    while(i < secondPSize)
+    {
+        hdToInst(nextFreeMemAddr + i, secondP, i + 32);
+        i = i + 1;
+    }
+    nextFreeMemBlock = nextFreeMemBlock + 1;
+
+    /* If input == 0, preemptive is off, if input == 1, preemptive is on */
+    preemptive = input();
+
+    /* Set queue and start execution */
+    running = firstP;
+    next = secondP;
+    setRunningId(running);
+    hdToReg(PCREG, running, 0); /* This syscall gets the PC for the process */
+    if(preemptive == 1)
+    {
+        preempON();
+    }
+    setPC(); /* This syscall jumps to the content of the PCREG */
+}

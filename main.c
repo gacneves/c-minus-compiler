@@ -21,11 +21,11 @@ void Scanner();
 int main(int argc, char * argv[])
 {
     if(argc != 3){
-        printf("Uso: %s <nomeDoArquivo.extensao> <BIOS ou HD>\n", argv[0]);
+        printf("Uso: %s <nomeDoArquivo.extensao> <BIOS, SO ou ARQ>\n", argv[0]);
         return 0;
     }
-    if(strcmp(argv[2], "BIOS") && strcmp(argv[2], "HD")){
-        printf("As unicas opcoes de modulos sao BIOS ou HD\n");
+    if(strcmp(argv[2], "BIOS") && strcmp(argv[2], "SO") && strcmp(argv[2], "ARQ")){
+        printf("As unicas opcoes de modulos sao BIOS, SO ou ARQ\n");
         return 0;
     }
     source = fopen(argv[1], "r");
@@ -65,20 +65,20 @@ int main(int argc, char * argv[])
                 if(!Error){
                     QuadList quadList;
                     InstructionList assemblyList;
+                    char * tp = argv[2]; 
 
                     printf("\nCodigo semanticamente correto.\n");
 
                     printf("\nGerando Codigo Intermediario...\n");
-                    quadList = codeGen(syntaxTree);
+                    quadList = codeGen(syntaxTree, tp);
                     printf("\nLista de Quadruplas gerada, salva em OutQuadList.\n");
 
                     printf("\nGerando Codigo Assembly...\n");
-                    assemblyList = assemblyGen(quadList);
+                    assemblyList = assemblyGen(quadList, tp);
                     printf("\nLista de Instrucoes Assembly geradas, salva em OutAssemblyList.\n");
 
                     printf("\nGerando Codigo Executavel...\n");
-                    char * dst = argv[2]; 
-                    binaryGen(assemblyList, dst);
+                    binaryGen(assemblyList, tp);
                     printf("\nCodigo Executavel gerado, salvo em OutBinaryList.\n");
 
                     printf("\n------------------------------------------------------\n");

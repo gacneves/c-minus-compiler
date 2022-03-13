@@ -8,11 +8,13 @@ typedef enum{
 }InstructionKind;
 
 typedef enum{   
-    $zero, $t0, $t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10, $t11, $t12, $t13, $t14, $t15, $t16, $a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8, $ad, $v0, $sp, $md, $ra
+    $zero, $t0, $t1, $t2, $t3, $t4, $t5, $t6, $t7, $a0, $a1, $a2, $a3, $a4, $ad, $s0, $s1, $s2, $s3, $s4, $s5, $s6, $s7, $c0, $c1, $c2, $id, $pc, $sp, $v0, $md, $ra
 }Register;
 // $zero: possui sempre o valor 0
 // $t: registradores temporarios
 // $a: registradores de argumentos
+// $id: registradores que identifica o processo que esta executando
+// $bf: buffer de troca de registrador com HD, e vice-versa
 // $ad: registrador de endereco para variaveis vetores como argumentos
 // $v0: regsitrador de retorno de funcao int
 // $sp: registrador de topo de pilha
@@ -50,7 +52,7 @@ typedef struct RegisterListRec{
 
 int * labelMap;                             // Num das linhas de instrucoes referentes aos labels
 
-InstructionList assemblyGen(QuadList head); // Gerador de codigo Assembly
+InstructionList assemblyGen(QuadList head, char * tp); // Gerador de codigo Assembly
 
 int searchInstLine_Label(int labelNo);      // Procura numero da linha de instrucao referente ao label para uso na geracao de codigo binario
 

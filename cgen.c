@@ -7,6 +7,7 @@ int ntemp = 0;                          // Proximo temp a ser criado
 char * tempAux, *tempAux2, * labelAux;  // Auxiliares para armazenar temporarios e labels de outras chamadas
 int nextDecl = 0;                       // Variavel para chamar prox declaracao
 int indexFlag = 0;                      // Flag para carregar o indice em caso de STORE de um vetor
+char * inputType;                       // Contem se a entrada é a BIOS, SO ou um programa
 
 char * newLabel(){                                                      // Funcao que cria novo label
     char * label = (char *)malloc((nlabel_size + 3) * sizeof(char));
@@ -17,8 +18,11 @@ char * newLabel(){                                                      // Funca
 
 char * newTemp(){                                                       // Funcao que cria novo temp
     char * temp = (char *)malloc((ntemp_size + 3) * sizeof(char));
-    sprintf(temp, "$t%d", ntemp);
-    ntemp = (ntemp + 1) % 17;                                           // Limite de temp $t0 - $t16
+    if(strcmp(inputType, "ARQ") != 0)
+        sprintf(temp, "$s%d", ntemp);
+    else
+        sprintf(temp, "$t%d", ntemp);
+    ntemp = (ntemp + 1) % 8;                                           // Limite de temp $t0 - $t7 / $s0 - $s7
     return temp;
 }
 
@@ -340,11 +344,15 @@ void printCode(FILE * codefile){
     }
 }
 
-QuadList codeGen(TreeNode * syntaxTree){
+QuadList codeGen(TreeNode * syntaxTree, char * tp){
+    inputType = tp;
     nlabel = 0;
     globalSize = 0;
     cGen(syntaxTree);
-    quadInsert("FINALIZE", "-", "-", "-");
+    if(strcmp(inputType, "ARQ") == 0)
+        quadInsert("FINALIZE", "-", "-", "-");
+    else
+        quadInsert("HLT", "-", "-", "-");
     FILE * codefile = fopen("outQuadList.output", "w+");
     printCode(codefile);
     fclose(codefile);

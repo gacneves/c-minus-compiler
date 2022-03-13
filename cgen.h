@@ -13,7 +13,7 @@ typedef struct QuadListRec{
     struct QuadListRec * next; 
 } * QuadList;
 
-QuadList codeGen(TreeNode * syntaxTree);
+QuadList codeGen(TreeNode * syntaxTree, char * tp);
 
 void cGen(TreeNode * tree);
 

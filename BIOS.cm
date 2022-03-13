@@ -1,0 +1,14 @@
+void main(void)
+{  
+    int i;
+
+    setRunningId(99);
+    i = 0;
+    while(i < 400)
+    {
+        hdToInst(i,0,i);
+        i = i + 1;
+    }
+    setRunningId(0);
+    memCtrl();
+}

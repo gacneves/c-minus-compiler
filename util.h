@@ -22,4 +22,7 @@ void defEscopo(TreeNode*, char*);
 // Pesquisa as syscalls do sistema
 int syscall(char *);
 
+// Pesquisa as syscalls do sistema verificando a corretude na quantidade de parâmetros
+int syscallParamQt(char *, int);
+
 #endif

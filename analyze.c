@@ -204,14 +204,9 @@ static void checkNode(TreeNode * t){ // Checa os tipos
                     break;
                     
                 case callX:
-                    if(strcmp(t->attr.name, "output") == 0 && st_lookup_paramQt(t->attr.name, t->attr.scope) != 1){ // Erro output com parametro conflitante
-                        typeError(t, "Quantidade de parametros diferente da definicao");
-                    }
-                    else if((strcmp(t->attr.name, "hdToInst") == 0 || strcmp(t->attr.name, "hdToReg") == 0 || strcmp(t->attr.name, "regToHd") == 0) && st_lookup_paramQt(t->attr.name, t->attr.scope) != 3){
-                        typeError(t, "Quantidade de parametros diferente da definicao");
-                    }
-                    else if(strcmp(t->attr.name, "output") != 0 && strcmp(t->attr.name, "hdToInst") != 0 && strcmp(t->attr.name, "hdToReg") != 0 && strcmp(t->attr.name, "regToHd") != 0 && syscall(t->attr.name) && st_lookup_paramQt(t->attr.name, t->attr.scope) != 0) { // Erro output com parametro conflitante
-                        typeError(t, "Quantidade de parametros diferente da definicao");
+                    if(syscall(t->attr.name)){ // Erro sycall com parametro conflitante
+                        if(!syscallParamQt(t->attr.name, st_lookup_paramQt(t->attr.name, t->attr.scope)))
+                            typeError(t, "Quantidade de parametros diferente da definicao");
                     }
 			        else if(!syscall(t->attr.name) && (st_lookup_paramQt(t->attr.name, t->attr.scope) != st_lookup_paramQt(t->attr.name, "global"))){ // Erro funcao com parametro diferente da declaracao
 				        typeError(t, "Quantidade de parametros diferente da definicao");

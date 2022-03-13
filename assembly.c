@@ -3,6 +3,9 @@
 #include "cgen.h"
 #include "symtab.h"
 
+#define QUANTUM 20
+#define BUFFER_REG 27
+
 InstructionList instListHead = NULL;    // Inicio da lista de instrucoes Assembly
 UnusedRegisterList RegListHead = NULL;  // Inicio da lista de registradores nao usados
 UnusedRegisterList RegListTail = NULL;  // Fim da lista de registradores nao usados
@@ -13,6 +16,7 @@ int lineNo = 0;                         // Numero da linha da instrucao Assembly
 char * currentScope;                    // Escopo atual alterado uma vez que a quadrupla FUN aparece
 int argCounter;                         // Conta quantos argumentos ainda faltam para se guardar na memoria
 int checkNotSet;                        // Flag para checagem apos comparacao logica de LET e GET (se $t for 0, entao a comparacao eh verdadeira)
+char * inputType;                       // Contem se a entrada é a BIOS, SO ou um programa
 
 int isNumber(char * str){                   // Verifica se uma string contem apenas digitos
     for(int i = 0; i < strlen(str); i++)
@@ -25,7 +29,11 @@ int searchInstLine_Label(int labelNo){      // Retorna o numero da instrucao ref
     return labelMap[labelNo];
 }
 
-Register tempRegister(char * temp){                 // Retorna o registrador temporario $t(0-16) dado a string que o representa
+Register initArgRegister(){
+    return (strcmp(inputType,"ARQ")!=0) ? $c0 : $a0;
+}
+
+Register tempRegister(char * temp){                 // Retorna o registrador temporario $t(0-7)/$s(0-7) dado a string que o representa
     if(strcmp(temp,"$t0") == 0) return $t0;
     else if(strcmp(temp,"$t1") == 0) return $t1;
     else if(strcmp(temp,"$t2") == 0) return $t2;
@@ -34,15 +42,14 @@ Register tempRegister(char * temp){                 // Retorna o registrador tem
     else if(strcmp(temp,"$t5") == 0) return $t5;
     else if(strcmp(temp,"$t6") == 0) return $t6;
     else if(strcmp(temp,"$t7") == 0) return $t7;
-    else if(strcmp(temp,"$t8") == 0) return $t8;
-    else if(strcmp(temp,"$t9") == 0) return $t9;
-    else if(strcmp(temp,"$t10") == 0) return $t10;
-    else if(strcmp(temp,"$t11") == 0) return $t11;
-    else if(strcmp(temp,"$t12") == 0) return $t12;
-    else if(strcmp(temp,"$t13") == 0) return $t13;
-    else if(strcmp(temp,"$t14") == 0) return $t14;
-    else if(strcmp(temp,"$t15") == 0) return $t15;
-    else if(strcmp(temp,"$t16") == 0) return $t16;
+    else if(strcmp(temp,"$s0") == 0) return $s0;
+    else if(strcmp(temp,"$s1") == 0) return $s1;
+    else if(strcmp(temp,"$s2") == 0) return $s2;
+    else if(strcmp(temp,"$s3") == 0) return $s3;
+    else if(strcmp(temp,"$s4") == 0) return $s4;
+    else if(strcmp(temp,"$s5") == 0) return $s5;
+    else if(strcmp(temp,"$s6") == 0) return $s6;
+    else if(strcmp(temp,"$s7") == 0) return $s7;
     else return -1;
 }
 
@@ -76,32 +83,29 @@ char * registerToString(Register r){        // Transforma registradores em strin
         case $t7:
             strcpy(reg,"$t7");
             break;
-        case $t8:
-            strcpy(reg,"$t8");
+        case $s0:
+            strcpy(reg,"$s0");
             break;
-        case $t9:
-            strcpy(reg,"$t9");
+        case $s1:
+            strcpy(reg,"$s1");
             break;
-        case $t10:
-            strcpy(reg,"$t10");
+        case $s2:
+            strcpy(reg,"$s2");
             break;
-        case $t11:
-            strcpy(reg,"$t11");
+        case $s3:
+            strcpy(reg,"$s3");
             break;
-        case $t12:
-            strcpy(reg,"$t12");
+        case $s4:
+            strcpy(reg,"$s4");
             break;
-        case $t13:
-            strcpy(reg,"$t13");
+        case $s5:
+            strcpy(reg,"$s5");
             break;
-        case $t14:
-            strcpy(reg,"$t14");
+        case $s6:
+            strcpy(reg,"$s6");
             break;
-        case $t15:
-            strcpy(reg,"$t15");
-            break;
-        case $t16:
-            strcpy(reg,"$t16");
+        case $s7:
+            strcpy(reg,"$s7");
             break;
         case $a0:
             strcpy(reg,"$a0");
@@ -118,17 +122,20 @@ char * registerToString(Register r){        // Transforma registradores em strin
         case $a4:
             strcpy(reg,"$a4");
             break;
-        case $a5:
-            strcpy(reg,"$a5");
+        case $c0:
+            strcpy(reg,"$c0");
             break;
-        case $a6:
-            strcpy(reg,"$a6");
+        case $c1:
+            strcpy(reg,"$c1");
             break;
-        case $a7:
-            strcpy(reg,"$a7");
+        case $c2:
+            strcpy(reg,"$c2");
             break;
-        case $a8:
-            strcpy(reg,"$a8");
+        case $id:
+            strcpy(reg,"$id");
+            break;
+        case $pc:
+            strcpy(reg,"$pc");
             break;
         case $ad:
             strcpy(reg,"$ad");
@@ -223,7 +230,7 @@ void assemblyGen_FUN(Quad q){                                   // Tratamento da
     assemblyInsert(0, 0, 0, 0, 0, lineNo, 0, Lab, q.arg2);      // Converte em um label que define o inicio da funcao
     sPos = 0;                                                   // Inicia o topo da pilha como 0
     currentScope = q.arg2;                                      // Armazena-se escopo atual
-    argRegister = $a0;                                          // Inicializa o registrador de argumento como $a0 (o primeiro a ser passado)
+    argRegister = initArgRegister();                            // Inicializa o registrador de argumento como $a0 (o primeiro a ser passado)
     argCounter = st_lookup_paramQt(q.arg2, "global");           // Guarda-se quantidade de argumentos da funcao
 }
 
@@ -235,7 +242,7 @@ void assemblyGen_ARG(Quad q){                                               // T
     argRegister++;                                                          // Soma-se o registrador $a de argumento para selecao do proximo
     argCounter--;                                                           // Desconta-se a quantidade de argumentos restantes
     if(argCounter == 0)                                                     // Se for o ultimo argumento
-        argRegister = $a0;                                                  // Atualiza-se o registrador de argumento para o primeiro novamente para uso posterior
+        argRegister = initArgRegister();                                    // Atualiza-se o registrador de argumento para o primeiro novamente para uso posterior
 }
 
 void assemblyGen_PARAM(Quad q){                                                             // Tratamento da quadrupla PARAM
@@ -263,9 +270,9 @@ void assemblyGen_CALL(Quad q){                                                  
         unusedRegInsert(tempRegister(q.arg1));                                              // Insere-se na lista de regs nao usados o temp que se armazena o retorno da funcao IN
     }
     else if(strcmp(q.arg2,"output") == 0){                                                  // Se for a funcao output
-        assemblyInsert(OUT, $a0, 0, 0, 0, lineNo, R, Inst, "");                             // Insere-se a instrucao OUT passando o argumento a ser impresso na saida
+        assemblyInsert(OUT, argRegister-1, 0, 0, 0, lineNo, R, Inst, "");                   // Insere-se a instrucao OUT passando o argumento a ser impresso na saida
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
-        argRegister = $a0;                                                                  // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
     else if(strcmp(q.arg2,"preempON") == 0){                                                // Se for a funcao preempON
         assemblyInsert(PREEMPON, 0, 0, 0, 0, lineNo, O, Inst, "");                          // Insere-se a instrução PREEMPON, para iniciar a contagem do timer de quantum
@@ -280,19 +287,41 @@ void assemblyGen_CALL(Quad q){                                                  
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
     }
     else if(strcmp(q.arg2,"hdToInst") == 0){                                                // Se for a funcao hdToInst
-        assemblyInsert(HDTOINST, $a0, $a1, $a2, 0, lineNo, R, Inst, "");                    // Insere-se a instrução HDTOINST, para escrever do HD na memória de instruções
+        assemblyInsert(HDTOINST, $c0, $c1, $c2, 0, lineNo, R, Inst, "");                    // Insere-se a instrução HDTOINST, para escrever do HD na memória de instruções
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
-        argRegister = $a0;                                                                  // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
     else if(strcmp(q.arg2,"hdToReg") == 0){                                                 // Se for a funcao hdToReg
-        assemblyInsert(HDTOREG, $a0, $a1, $a2, 0, lineNo, R, Inst, "");                     // Insere-se a instrução HDTOREG, para escrever do HD no banco de registradores
+        assemblyInsert(HDTOREG, $c0, $c1, $c2, 0, lineNo, R, Inst, "");                     // Insere-se a instrução HDTOREG, para escrever do HD no banco de registradores
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
-        argRegister = $a0;                                                                  // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
     else if(strcmp(q.arg2,"regToHd") == 0){                                                 // Se for a funcao regToHd
-        assemblyInsert(REGTOHD, $a0, $a1, $a2, 0, lineNo, R, Inst, "");                     // Insere-se a instrução REGTOHD, para escrever dp banco de registradores no HD
+        assemblyInsert(REGTOHD, $c0, $c1, $c2, 0, lineNo, R, Inst, "");                     // Insere-se a instrução REGTOHD, para escrever do banco de registradores no HD
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
-        argRegister = $a0;                                                                  // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+    }
+    else if(strcmp(q.arg2,"storeVar") == 0){                                                // Se for a funcao storeVar
+        assemblyInsert(ADD, $pc, $zero, $c0, 0, lineNo, R, Inst, "");                       // Insere-se a instrução ADDI, para escrever no registrador $a0 o numero do registrador de buffer $bf
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        assemblyInsert(ADDI, $c0, $zero, 0, BUFFER_REG, lineNo, I, Inst, "");                       // Insere-se a instrução ADDI, para escrever no registrador $a0 o numero do registrador de buffer $bf
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        assemblyInsert(REGTOHD, $c0, $c1, $c2, 0, lineNo, R, Inst, "");                     // Insere-se a instrução REGTOHD, para escrever do banco de registradores no HD
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+    }
+    else if(strcmp(q.arg2,"setPC") == 0){                                                   // Se for a funcao setPC
+        assemblyInsert(JR, $pc, 0, 0, 0, lineNo, R, Inst, "");                              // Insere-se a instrução ADD, para escrever no registrador $bf de buffer de troca de dados entre o HD, a variavel desejada
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+    }
+        else if(strcmp(q.arg2,"setRunningId") == 0){                                        // Se for a funcao setRunningId
+        assemblyInsert(ADD, $id, $zero, $c0, 0, lineNo, R, Inst, "");                       // Insere-se a instrução ADD, para escrever no registrador $id o identificador do processo que esta rodando
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+    }
+    else if(strcmp(q.arg2,"halt") == 0){                                                    // Se for a funcao halt
+        assemblyInsert(HLT, 0, 0, 0, 0, lineNo, O, Inst, "");                               // Insere-se a instrucao HLT que para o funcionamento do processador
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
     }
     else{                                                                                   // Se nao for a funcao input ou output
         // Empilha registradores que ainda nao foram utilizados
@@ -312,7 +341,7 @@ void assemblyGen_CALL(Quad q){                                                  
 
         assemblyInsert(ADDI, $sp, $sp, 0, sPos, lineNo, I, Inst, "");                       // Soma-se o inicio da proxima funcao na memoria, atribuindo o topo da pilha a $sp
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
-        argRegister = $a0;                                                                  // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
         assemblyInsert(JAL, 0, 0, 0, 0, lineNo, JP, Inst, q.arg2);                          // Insere-se a instrucao JAL que pula para funcao e guarda no registrador $ra o endereco de retorno
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
         assemblyInsert(SUBI, $sp, $sp, 0, sPos, lineNo, I, Inst, "");                       // Insere-se a instrucao SUBI que volta o registrador $sp pro escopo anterior
@@ -611,7 +640,7 @@ void printAssembly(FILE * assemblyFile){ // Funcao para print do codigo Assembly
                         fprintf(assemblyFile, "%d %s\n", i->inst.lineNo, "NOP");
                         break;
                     case HLT:
-                        fprintf(assemblyFile, "%d %s", i->inst.lineNo, "HLT");
+                        fprintf(assemblyFile, "%d %s\n", i->inst.lineNo, "HLT");
                         break;
                     case FINALIZE:
                         fprintf(assemblyFile, "%d %s\n", i->inst.lineNo, "FINALIZE");
@@ -659,7 +688,8 @@ void printLabelInfo(FILE * memoryFile){                                         
     }
 }
 
-InstructionList assemblyGen(QuadList head){
+InstructionList assemblyGen(QuadList head, char * tp){
+    inputType = tp;
     labelMap = malloc(nlabel * sizeof(int));                                    // Inicializa map dos labels
     sPos = globalSize;                                                          // Inicializa o inicio da pilha
     

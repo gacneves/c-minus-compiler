@@ -72,29 +72,29 @@ void printBinary(FILE * binFile){                                               
     while(b != NULL){
         switch(b->bin.type){
             case R:
-                decimalToBinaryPrint(i,b->bin.opCode, 5, binFile);
+                decimalToBinaryPrint(i,b->bin.opCode, 6, binFile);
                 opCode = 0;
                 decimalToBinaryPrint(i,b->bin.rd, 5, binFile);
                 decimalToBinaryPrint(i,b->bin.rs, 5, binFile);
                 decimalToBinaryPrint(i,b->bin.rt, 5, binFile);
-                decimalToBinaryPrint(i,0, 12, binFile);
+                decimalToBinaryPrint(i,0, 11, binFile);
                 break;
             case I:
-                decimalToBinaryPrint(i,b->bin.opCode, 5, binFile);
+                decimalToBinaryPrint(i,b->bin.opCode, 6, binFile);
                 opCode = 0;
                 decimalToBinaryPrint(i,b->bin.rd, 5, binFile);
                 decimalToBinaryPrint(i,b->bin.rs, 5, binFile);
-                decimalToBinaryPrint(i,b->bin.IMM, 17, binFile);
+                decimalToBinaryPrint(i,b->bin.IMM, 16, binFile);
                 break;
             case JP:
-                decimalToBinaryPrint(i,b->bin.opCode, 5, binFile);
+                decimalToBinaryPrint(i,b->bin.opCode, 6, binFile);
                 opCode = 0;
-                decimalToBinaryPrint(i,b->bin.IMM, 27, binFile);
+                decimalToBinaryPrint(i,b->bin.IMM, 26, binFile);
                 break;
             case O:
-                decimalToBinaryPrint(i,b->bin.opCode, 5, binFile);
+                decimalToBinaryPrint(i,b->bin.opCode, 6, binFile);
                 opCode = 0;
-                decimalToBinaryPrint(i,0, 27, binFile);
+                decimalToBinaryPrint(i,0, 26, binFile);
                 break;
         }
         fprintf(binFile,";\n");
@@ -106,7 +106,7 @@ void printBinary(FILE * binFile){                                               
 
 void binaryGen(InstructionList instListHead, char * setDst){                                                                               // Gerador de codigo binario
     InstructionList i = instListHead;
-    dstModule = setDst;
+    dstModule = (strcmp(setDst, "BIOS") == 0) ? "BIOS" : "HD";
 
     while(i != NULL){
         if(i->inst.lineKind == Inst){

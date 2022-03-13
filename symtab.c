@@ -3,7 +3,7 @@
 #include <string.h>
 #include "symtab.h"
 
-#define SIZE 211 // Tamanho da tabela (num primo)
+#define SIZE 997 // Tamanho da tabela (num primo)
 #define SHIFT 4 // Peso dos caracteres para o hash
 
 static int hash (char* name, char* scope){ // Calcula o indice onde deve ser adcionado na tabela
@@ -130,14 +130,14 @@ int st_lookup_size(char *name, char *scope){ // Procura na tabela e retorna o ta
 void printSymTab(){ // Printa a tabela se símbolos 
     FILE * listing = fopen("outAnalyze.output","w+");
     int i;
-    fprintf(listing,"  Nome             Escopo          TipoID         TipoDado         Número Linha\n");
-    fprintf(listing,"--------        ------------    ------------    ------------    --------------------\n");
+    fprintf(listing,"  Nome                     Escopo          TipoID         TipoDado         Número Linha\n");
+    fprintf(listing,"--------                ------------    ------------    ------------    --------------------\n");
     for (i=0;i<SIZE;++i){ 
         if (hashTable[i] != NULL){ 
             BucketList l = hashTable[i];
             while (l != NULL){ 
                 LineList t = l->lines;
-                fprintf(listing,"%-14s  ",l->name);
+                fprintf(listing,"%-25s  ",l->name);
                 fprintf(listing,"%-14s  ",l->scope);
                 fprintf(listing,"%-14s  ",l->typeID);
                 fprintf(listing,"%-14s  ",l->typeData); 

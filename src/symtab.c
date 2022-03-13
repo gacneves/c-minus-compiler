@@ -128,7 +128,7 @@ int st_lookup_size(char *name, char *scope){ // Procura na tabela e retorna o ta
 
 
 void printSymTab(){ // Printa a tabela se símbolos 
-    FILE * listing = fopen("outAnalyze.output","w+");
+    FILE * listing = fopen("output_files/outAnalyze.output","w+");
     int i;
     fprintf(listing,"  Nome                     Escopo          TipoID         TipoDado         Número Linha\n");
     fprintf(listing,"--------                ------------    ------------    ------------    --------------------\n");

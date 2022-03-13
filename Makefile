@@ -49,7 +49,7 @@ $(OBJ_DIR) $(OUT_DIR):
 	mkdir -p $@
 
 success:
-	@echo "$(GREEN_COLOR)\nSuccessfully build!\nRun the compiler using: $(EXE) <nomeDoArquivo.cm> <BIOS, SO ou ARQ>$(RESET_COLOR)"
+	@echo "$(GREEN_COLOR)\nSuccessfully build!\nRun the compiler using: $(EXE) <nomeDoArquivo.cm> <BIOS, SO ou ARQ>\n$(RESET_COLOR)"
 
 clean:
 	@echo "$(GREEN_COLOR)\nRemoving generated directories...$(RESET_COLOR)"

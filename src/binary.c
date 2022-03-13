@@ -134,7 +134,7 @@ void binaryGen(InstructionList instListHead, char * setDst){                    
         i = i->next;
     }
 
-    FILE * codefile = fopen("outBinary.output", "w+");
+    FILE * codefile = fopen("output_files/outBinary.output", "w+");
     printBinary(codefile);
     fclose(codefile);
 }

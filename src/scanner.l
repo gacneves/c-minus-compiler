@@ -91,7 +91,7 @@ TokenType getToken(){ // Pega os tokens
 
 void Scanner(){ // Funcao scanner para gerar arquivo com tokens
     int token;
-    FILE *f_out = fopen("outScanner.output","w+");
+    FILE *f_out = fopen("output_files/outScanner.output","w+");
 	do{
         token = yylex();
         switch(token){

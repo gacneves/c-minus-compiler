@@ -353,7 +353,7 @@ QuadList codeGen(TreeNode * syntaxTree, char * tp){
         quadInsert("FINALIZE", "-", "-", "-");
     else
         quadInsert("HLT", "-", "-", "-");
-    FILE * codefile = fopen("outQuadList.output", "w+");
+    FILE * codefile = fopen("output_files/outQuadList.output", "w+");
     printCode(codefile);
     fclose(codefile);
     return head;

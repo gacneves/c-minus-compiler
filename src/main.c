@@ -21,7 +21,7 @@ void Scanner();
 int main(int argc, char * argv[])
 {
     if(argc != 3){
-        printf("Uso: %s <nomeDoArquivo.extensao> <BIOS, SO ou ARQ>\n", argv[0]);
+        printf("Uso: %s <nomeDoArquivo.cm> <BIOS, SO ou ARQ>\n", argv[0]);
         return 0;
     }
     if(strcmp(argv[2], "BIOS") && strcmp(argv[2], "SO") && strcmp(argv[2], "ARQ")){

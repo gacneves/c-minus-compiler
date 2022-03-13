@@ -24,7 +24,7 @@ OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 # Main target
 all: $(EXE)
 
-$(EXE): scanner parser source
+$(EXE): scanner parser source success
 
 scanner:
 	@echo "$(GREEN_COLOR)\nGenerating lexical analyzer files...$(RESET_COLOR)"
@@ -47,6 +47,9 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR) d_obj
 $(OBJ_DIR) $(OUT_DIR):
 	@echo "$(GREEN_COLOR)\nCreating $@ directory...$(RESET_COLOR)"
 	mkdir -p $@
+
+success:
+	@echo "$(GREEN_COLOR)\nSuccessfully build!\nRun the compiler using: $(EXE) <nomeDoArquivo.cm> <BIOS, SO ou ARQ>$(RESET_COLOR)"
 
 clean:
 	@echo "$(GREEN_COLOR)\nRemoving generated directories...$(RESET_COLOR)"

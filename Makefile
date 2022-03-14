@@ -11,7 +11,6 @@ SRC_DIR := src
 INC_DIR := include
 OBJ_DIR := obj
 BIN_DIR := .
-OUT_DIR := output_files
 
 # Executable
 EXE := $(BIN_DIR)/cMinusCompiler
@@ -49,7 +48,7 @@ d_obj:
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR) d_obj
 	$(CC) -Iinclude -Wall -c $< -o $@
 
-$(OBJ_DIR) $(OUT_DIR):
+$(OBJ_DIR):
 	@echo "$(GREEN_COLOR)\nCreating $@ directory...$(RESET_COLOR)"
 	mkdir -p $@
 
@@ -59,4 +58,3 @@ success:
 clean:
 	@echo "$(GREEN_COLOR)\nRemoving generated directories...$(RESET_COLOR)"
 	$(RM) -rv $(OBJ_DIR)
-	$(RM) -rv $(OUT_DIR)

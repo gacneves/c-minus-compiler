@@ -3,6 +3,9 @@ RED_COLOR := `tput setaf 1`
 GREEN_COLOR := `tput setaf 2`
 RESET_COLOR := `tput sgr0`
 
+# Bold characters
+BOLD := `tput bold`
+
 # Files directories
 SRC_DIR := src
 INC_DIR := include
@@ -49,7 +52,7 @@ $(OBJ_DIR) $(OUT_DIR):
 	mkdir -p $@
 
 success:
-	@echo "$(GREEN_COLOR)\nSuccessfully build!\nRun the compiler using: $(EXE) <nomeDoArquivo.cm> <BIOS, SO ou ARQ>\n$(RESET_COLOR)"
+	@echo "$(BOLD)$(GREEN_COLOR)\nSuccessfully build!\nRun the compiler using: $(EXE) <nomeDoArquivo.cm> <BIOS, SO ou ARQ>\n$(RESET_COLOR)"
 
 clean:
 	@echo "$(GREEN_COLOR)\nRemoving generated directories...$(RESET_COLOR)"

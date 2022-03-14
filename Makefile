@@ -29,10 +29,12 @@ all: $(EXE)
 
 $(EXE): scanner parser source success
 
+# Generate lex.yy.c everytime flex runs (If the file doesn't exist when make runs, run it again, explict this in README)
 scanner:
 	@echo "$(GREEN_COLOR)\nGenerating lexical analyzer files...$(RESET_COLOR)"
 	flex $(SRC_DIR)/scanner.l; mv lex.yy.c $(SRC_DIR)
 
+# Generate parser.tab.c and parser.tab.h everytime bison runs (If the files doesn't exists when make runs, run it again, explict this in README)
 parser: $(OUT_DIR)
 	@echo "$(GREEN_COLOR)\nGenerating parser files...$(RESET_COLOR)"
 	bison -d $(SRC_DIR)/parser.y; mv parser.tab.c $(SRC_DIR); mv parser.tab.h $(INC_DIR);

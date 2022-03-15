@@ -8,7 +8,7 @@
 
 FILE * yyin;
 
-int Error = FALSE;
+int Error;
 
 TreeNode *syntaxTree;
 int numlinha = 1;
@@ -19,6 +19,8 @@ void Scanner();
 
 int compilationProcess(FILE * f){
     yyin = f;
+
+    Error = FALSE;
 
     printf("\nRealizando Scanner...\n");
     Scanner();
@@ -78,8 +80,8 @@ int main()
     printf("\n\nAuthor: Gabriel Angelo Cabral Neves");
     printf("\n------------------------------------------------------\n");
 
+    printf("\nEnter BIOS file: ");
     do{
-        printf("\nEnter BIOS file: ");
         do{
             scanf("%s", filename);
             bios_file = fopen(filename, "r");
@@ -94,8 +96,12 @@ int main()
         printf("\nStarting compilation process for BIOS...");
 
         ret = compilationProcess(bios_file);
+        fclose(bios_file);
+        if(!ret){
+            printf("\nBIOS compilation process failed. Please fix the error if you want to try again. cMinusCompiler will still be running");
+            printf("\nRe-enter BIOS file: ");
+        }
     }while(!ret);
-    fclose(bios_file);
-
+    
     return 0;
 }

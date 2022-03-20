@@ -12,6 +12,7 @@ INC_DIR := inc
 OBJ_DIR := obj
 BIN_DIR := .
 OUT_DIR := output
+DBG_DIR := debug
 
 # Executable
 EXE := $(BIN_DIR)/cMinusCompiler
@@ -58,4 +59,4 @@ success:
 
 clean:
 	@echo "$(GREEN_COLOR)\nRemoving generated directories...$(RESET_COLOR)"
-	$(RM) -rv $(OBJ_DIR)
+	$(RM) -rv $(OBJ_DIR) $(OUT_DIR) $(DBG_DIR)

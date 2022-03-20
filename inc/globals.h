@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #ifndef YYPARSER
 

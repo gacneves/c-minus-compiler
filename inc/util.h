@@ -19,6 +19,12 @@ void printTree( TreeNode * , FILE *);
 // Seta os escopos das declaracoes
 void defEscopo(TreeNode*, char*);
 
+// Checa se diretorio existe
+int dirExists(char*);
+
+// Cria diretorio
+int makeDir(char*);
+
 // Pesquisa as syscalls do sistema
 int syscall(char *);
 

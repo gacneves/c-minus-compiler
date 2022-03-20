@@ -8,9 +8,10 @@ BOLD := `tput bold`
 
 # Files directories
 SRC_DIR := src
-INC_DIR := include
+INC_DIR := inc
 OBJ_DIR := obj
 BIN_DIR := .
+OUT_DIR := output
 
 # Executable
 EXE := $(BIN_DIR)/cMinusCompiler

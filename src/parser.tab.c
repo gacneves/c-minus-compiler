@@ -2355,7 +2355,7 @@ void yyerror(){ // Escreve o erro no console
 
 TreeNode * parse(void){ // Retorna a arvore criada
 	yyparse();
-    FILE *f_out = fopen("output_files/outParser.output", "w+");
+    FILE *f_out = fopen("debug/outParser.output", "w+");
     printTree(savedTree, f_out);
     fclose(f_out);
 	return savedTree;

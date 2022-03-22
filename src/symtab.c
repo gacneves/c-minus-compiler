@@ -3,10 +3,7 @@
 #include <string.h>
 #include "symtab.h"
 
-#define SIZE 997 // Tamanho da tabela (num primo)
-#define SHIFT 4 // Peso dos caracteres para o hash
-
-static int hash (char* name, char* scope){ // Calcula o indice onde deve ser adcionado na tabela
+int hash (char* name, char* scope){ // Calcula o indice onde deve ser adcionado na tabela
     int temp = 0;
     int i = 0;
     while (name[i] != '\0'){ 
@@ -21,28 +18,6 @@ static int hash (char* name, char* scope){ // Calcula o indice onde deve ser adc
     }
     return temp;
 }
-
-// Estrutura para armazenar a linhas em que o token aparece
-typedef struct LineListRec{  
-    int lineno;
-    struct LineListRec * next;  
-} * LineList;
-
-// Estrutura para armazenar as informações nas posições da tabela hash
-typedef struct BucketListRec{ 
-    char* name;
-    LineList lines;
-    char* scope;
-    char* typeID;
-    char* typeData;
-    int paramQt;
-    int loc;
-    int size;
-    int * instLine;
-    struct BucketListRec * next;     
-} * BucketList;
-
-static BucketList hashTable[SIZE];
 
 void st_insert( char * name, int lineno, char* scope, char* typeID, char* typeData, int paramQt, int size){ 
     int h = hash(name, scope);
@@ -128,7 +103,7 @@ int st_lookup_size(char *name, char *scope){ // Procura na tabela e retorna o ta
 
 
 void printSymTab(){ // Printa a tabela se símbolos 
-    FILE * listing = fopen("output_files/outAnalyze.output","w+");
+    FILE * listing = fopen("debug/outAnalyze.output","w+");
     int i;
     fprintf(listing,"  Nome                     Escopo          TipoID         TipoDado         Número Linha\n");
     fprintf(listing,"--------                ------------    ------------    ------------    --------------------\n");

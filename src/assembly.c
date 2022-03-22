@@ -734,11 +734,11 @@ InstructionList assemblyGen(QuadList head, char * tp){
         q = q->next;
     }
 
-    FILE * codefile = fopen("output_files/outAssembly.output", "w+");
+    FILE * codefile = fopen("debug/outAssembly.output", "w+");
     printAssembly(codefile);
     fclose(codefile);
 
-    FILE * memoryFile = fopen("output_files/outMemory.output", "w+");
+    FILE * memoryFile = fopen("debug/outMemory.output", "w+");
     printMemInfo(memoryFile);
     printLabelInfo(memoryFile);
     fclose(memoryFile);

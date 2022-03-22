@@ -25,6 +25,7 @@
 #define TRUE 1
 #endif
 
+#define STRING_SIZE 100
 #define MAXRESERVED 6 // Num palavras reservadas
 
 extern int numlinha; // Variavel auxiliar com a linha atual

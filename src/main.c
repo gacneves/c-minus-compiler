@@ -80,7 +80,7 @@ int compilationProcess(FILE * f, char * tp){
     }
 
     // Check output/tp folder existence
-    char * path = malloc(100 * sizeof(char));
+    char * path = malloc(STRING_SIZE * sizeof(char));
     strcpy(path, "output/");
     if(strcmp(tp, "BIOS") == 0)
         strcat(path, tp);
@@ -148,7 +148,7 @@ int main()
 
         printf("\nStarting compilation process for OS...");
 
-        ret = compilationProcess(os_file, "OS");
+        ret = compilationProcess(os_file, "Operating System");
         fclose(os_file);
         if(!ret){
             printf("\nOS compilation process failed. Please fix the error if you want to try again. cMinusCompiler will still be running");

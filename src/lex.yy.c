@@ -1941,7 +1941,7 @@ TokenType getToken(){ // Pega os tokens
 
 void Scanner(){ // Funcao scanner para gerar arquivo com tokens
     int token;
-    FILE *f_out = fopen("output_files/outScanner.output","w+");
+    FILE *f_out = fopen("debug/outScanner.output","w+");
 	do{
         token = yylex();
         switch(token){
@@ -2041,4 +2041,5 @@ void Scanner(){ // Funcao scanner para gerar arquivo com tokens
             default: break;
         }
     }while(token != ENDF);
+    fclose(f_out);
 }

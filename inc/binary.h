@@ -13,6 +13,6 @@ typedef struct BinaryListRec{
     struct BinaryListRec * next; 
 } * BinaryList;
 
-void binaryGen(InstructionList instList, char * setDst);
+void binaryGen(InstructionList instList, char * setDst, char * path);
 
 #endif

@@ -17,10 +17,20 @@ int iniciolinha = 1;
 TokenType getToken();
 void Scanner();
 
-int compilationProcess(FILE * f){
+int compilationProcess(FILE * f, char * tp){
     yyin = f;
-
     Error = FALSE;
+    syntaxTree = NULL;
+
+    // Check Debug folder existence
+    printf("\nChecking debug folder existence...");
+    if(dirExists("debug")) printf("\nFound debug folder");
+    else{
+        printf("\nDebug folder not found");
+        printf("\nCreating debug directory...");
+        if(makeDir("debug")) printf("\nCreated debug folder successfully!");
+        else return 0;
+    }
 
     printf("\nRealizando Scanner...");
     Scanner();
@@ -49,7 +59,6 @@ int compilationProcess(FILE * f){
 
     QuadList quadList;
     InstructionList assemblyList;
-    char * tp = "BIOS"; 
     printf("\nGerando Codigo Intermediario...");
     quadList = codeGen(syntaxTree, tp);
     printf("\nLista de Quadruplas gerada, salva em OutQuadList.");
@@ -58,8 +67,28 @@ int compilationProcess(FILE * f){
     assemblyList = assemblyGen(quadList, tp);
     printf("\nLista de Instrucoes Assembly geradas, salva em OutAssemblyList.");
 
+    printf("\nCompilation process information can be found in debug folder");
+
+    // Check Output folder existence
+    printf("\nChecking output folder existence...");
+    if(dirExists("output")) printf("\nFound output folder");
+    else{
+        printf("\nOutput folder not found");
+        printf("\nCreating output directory...");
+        if(makeDir("output")) printf("\nCreated output folder successfully!");
+        else return 0;
+    }
+
+    // Check output/tp folder existence
+    char * path = malloc(100 * sizeof(char));
+    strcpy(path, "output/");
+    if(strcmp(tp, "BIOS") == 0)
+        strcat(path, tp);
+    else
+        strcat(path, "HD");
+    strcat(path, ".bin");
     printf("\nGerando Codigo Executavel...");
-    binaryGen(assemblyList, tp);
+    binaryGen(assemblyList, tp, path);
     printf("\nCodigo Executavel gerado, salvo em OutBinaryList.");
                 
     return 1;
@@ -92,7 +121,7 @@ int main()
 
         printf("\nStarting compilation process for BIOS...");
 
-        ret = compilationProcess(bios_file);
+        ret = compilationProcess(bios_file, "BIOS");
         fclose(bios_file);
         if(!ret){
             printf("\nBIOS compilation process failed. Please fix the error if you want to try again. cMinusCompiler will still be running");
@@ -100,7 +129,7 @@ int main()
         }
     }while(!ret);
 
-    printf("\nBIOS compilation process finished successfully. Binary file saved in output_files folder");
+    printf("\nBIOS compilation process finished successfully. Binary file saved in output/BIOS folder");
 
     printf("\n------------------------------------------------------\n");
 
@@ -119,7 +148,7 @@ int main()
 
         printf("\nStarting compilation process for OS...");
 
-        ret = compilationProcess(os_file);
+        ret = compilationProcess(os_file, "OS");
         fclose(os_file);
         if(!ret){
             printf("\nOS compilation process failed. Please fix the error if you want to try again. cMinusCompiler will still be running");
@@ -127,7 +156,7 @@ int main()
         }
     }while(!ret);
 
-    printf("\nOS compilation process finished successfully. Waiting for programs to save binary file for HD...");
+    printf("\nOS compilation process finished successfully. Incrementing binary file in output/HD folder...");
 
     printf("\n------------------------------------------------------\n");
 

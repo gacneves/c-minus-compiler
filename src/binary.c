@@ -104,7 +104,7 @@ void printBinary(FILE * binFile){                                               
     }
 }
 
-void binaryGen(InstructionList instListHead, char * setDst){                                                                               // Gerador de codigo binario
+void binaryGen(InstructionList instListHead, char * setDst, char * path){                                                                               // Gerador de codigo binario
     InstructionList i = instListHead;
     dstModule = (strcmp(setDst, "BIOS") == 0) ? "BIOS" : "HD";
 
@@ -134,7 +134,7 @@ void binaryGen(InstructionList instListHead, char * setDst){                    
         i = i->next;
     }
 
-    FILE * codefile = fopen("output_files/outBinary.output", "w+");
+    FILE * codefile = fopen(path, "w+");
     printBinary(codefile);
     fclose(codefile);
 }

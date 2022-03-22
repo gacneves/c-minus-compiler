@@ -36,7 +36,7 @@ scanner:
 	flex $(SRC_DIR)/scanner.l; mv lex.yy.c $(SRC_DIR)
 
 # Generate parser.tab.c and parser.tab.h everytime bison runs (If the files doesn't exists when make runs, run it again, explict this in README)
-parser: $(OUT_DIR)
+parser:
 	@echo "$(GREEN_COLOR)\nGenerating parser files...$(RESET_COLOR)"
 	bison -d $(SRC_DIR)/parser.y; mv parser.tab.c $(SRC_DIR); mv parser.tab.h $(INC_DIR);
 
@@ -48,7 +48,7 @@ d_obj:
 	@echo "$(GREEN_COLOR)\nGenerating object files...$(RESET_COLOR)"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR) d_obj
-	$(CC) -Iinclude -Wall -c $< -o $@
+	$(CC) -Iinc -Wall -c $< -o $@
 
 $(OBJ_DIR):
 	@echo "$(GREEN_COLOR)\nCreating $@ directory...$(RESET_COLOR)"

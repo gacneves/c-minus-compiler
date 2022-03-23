@@ -99,6 +99,7 @@ int main()
     char filename[100];
     FILE * bios_file, * os_file, * proc_file;
     int ret;
+    nextAvailableTrack = 1;
     
     printf("\nC- Compiler for MIPS based processor");
     printf("\n------------------------------------------------------");
@@ -148,6 +149,8 @@ int main()
 
         printf("\nStarting compilation process for OS...");
 
+        /* Removing HD output file since the content is appended */
+        remove("output/HD.bin");
         ret = compilationProcess(os_file, "Operating System");
         fclose(os_file);
         if(!ret){
@@ -160,7 +163,43 @@ int main()
 
     printf("\n------------------------------------------------------\n");
 
-    printf("Enter the programs to save in HD");
+    printf("\nEnter the programs to store in HD (Max 15)\n");
 
+    proc_no = 0;
+    do{
+        printf("\nEnter Program file (0 to quit): ");
+        do{
+            do{
+                scanf("%s", filename);
+                if(strcmp(filename, "0") == 0) break;
+                proc_file = fopen(filename, "r");
+                if(proc_file == NULL){
+                    printf("\nFile not found! Please enter a valid one");
+                    printf("\nRe-enter Program file: ");
+                }
+            }while(proc_file == NULL);
+
+            if(strcmp(filename, "0") == 0) break;
+            printf("\nSuccessfully opened Program file!\n");
+            
+            printf("\nEnter program identifier: ");
+            scanf("%d", &id[proc_no]);
+            proc_no += 1;
+
+            printf("\nStarting compilation process for given program...");
+
+            ret = compilationProcess(proc_file, "Process");
+            fclose(proc_file);
+            if(!ret){
+                printf("\nProgram compilation process failed. Please fix the error if you want to try again. cMinusCompiler will still be running");
+                id[proc_no] = 0;
+                proc_no -= 1;
+                printf("\nRe-enter OS file: ");
+            }
+            else nextAvailableTrack += 1;
+        }while(!ret);
+        printf("\n");
+    }while(strcmp(filename, "0") != 0);
+    
     return 0;
 }

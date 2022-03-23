@@ -15,4 +15,18 @@ typedef struct BinaryListRec{
 
 void binaryGen(InstructionList instList, char * setDst, char * path);
 
+/* Hard Disk organization */
+#define PROCESSESS_TABLE_TRACK 0
+#define PROCESSESS_TABLE_SECTOR 0
+#define OPERATING_SYSTEM_TRACK 0
+#define OPERATING_SYSTEM_SECTOR 47
+#define MAX_OPERATING_SYSTEM_SIZE 2000
+#define SECTOR_SIZE 2048
+#define NUMBER_OF_REGS_IN_CONTEXT_EXCHANGE 18
+int nextAvailableTrack;
+
+/* For compiling programs: show process ID in output file, and correct indexing of HD module */
+int proc_no;
+int id[15];
+
 #endif

@@ -2,9 +2,10 @@
 #include "binary.h"
 #include "symtab.h"
 
-BinaryList binListHead = NULL;                                      // Inicio da lista de instrucoes binarias
+BinaryList binListHead;                                      // Inicio da lista de instrucoes binarias
 int opCode;
 char * dstModule;
+char * compilingName;
 
 void decimalToBinaryPrint(int i, int number, int bitNo, FILE * binFile){   // Funcao que converte decimal em binario para print das instrucoes
     char * binary = malloc(bitNo * sizeof(char));                   // Char para representar o binario de tamanho bitsNo
@@ -66,7 +67,13 @@ void binaryGen_J_Type(Instruction inst){                                        
 }
 
 void printBinary(FILE * binFile){                                               // Funcao que printa as instrucao binarias
-    int i = 0;
+    int i;
+
+    if(strcmp(compilingName, "BIOS") == 0) i = 0;
+    else{
+        if(strcmp(compilingName, "Operating System") == 0) i = OPERATING_SYSTEM_SECTOR;
+        else i = (nextAvailableTrack * SECTOR_SIZE) + NUMBER_OF_REGS_IN_CONTEXT_EXCHANGE;
+    }
     opCode = 1;
     BinaryList b = binListHead;
     while(b != NULL){
@@ -106,17 +113,28 @@ void printBinary(FILE * binFile){                                               
 
 void binaryGen(InstructionList instListHead, char * setDst, char * path){                                                                               // Gerador de codigo binario
     InstructionList i = instListHead;
-    
-    FILE * codefile = fopen(path, "w+");
+    binListHead = NULL;
+    FILE * codefile;
 
-    if(strcmp(setDst, "BIOS") == 0) dstModule = "BIOS";
+    compilingName = setDst;
+    if(strcmp(setDst, "BIOS") == 0){
+        codefile = fopen(path, "w+");
+        dstModule = "BIOS";
+    }
     else{
+        codefile = fopen(path, "a");
         dstModule = "HD";
         char * comment = malloc(STRING_SIZE * sizeof(char));
         strcpy(comment, "// ");
         strcat(comment, setDst);
+        if(strcmp(setDst, "Process") == 0){
+            strcat(comment, " ");
+            char * number = malloc(STRING_SIZE * sizeof(char));
+            sprintf(number, "%d", id[proc_no - 1]);
+            strcat(comment, number);
+        }
         strcat(comment, "\n");
-        fprintf(codefile, comment);
+        fputs(comment, codefile);
     }
 
     while(i != NULL){

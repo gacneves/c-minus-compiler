@@ -25,8 +25,15 @@ void binaryGen(InstructionList instList, char * setDst, char * path);
 #define NUMBER_OF_REGS_IN_CONTEXT_EXCHANGE 18
 int nextAvailableTrack;
 
-/* For compiling programs: show process ID in output file, and correct indexing of HD module */
+/* For compiling programs */
+#define MAX_NO_PROGRAMS 15
+
+typedef struct ProcInfo{
+    int id, size, location;
+} ProcInfo;
+
+int program_size_count;
 int proc_no;
-int id[15];
+ProcInfo * proc_info;
 
 #endif

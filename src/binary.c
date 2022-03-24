@@ -77,6 +77,7 @@ void printBinary(FILE * binFile){                                               
     opCode = 1;
     BinaryList b = binListHead;
     while(b != NULL){
+        program_size_count += 1;
         switch(b->bin.type){
             case R:
                 decimalToBinaryPrint(i,b->bin.opCode, 6, binFile);
@@ -130,13 +131,14 @@ void binaryGen(InstructionList instListHead, char * setDst, char * path){       
         if(strcmp(setDst, "Process") == 0){
             strcat(comment, " ");
             char * number = malloc(STRING_SIZE * sizeof(char));
-            sprintf(number, "%d", id[proc_no - 1]);
+            sprintf(number, "%d", proc_info[proc_no].id);
             strcat(comment, number);
         }
         strcat(comment, "\n");
         fputs(comment, codefile);
     }
 
+    program_size_count = 0;
     while(i != NULL){
         if(i->inst.lineKind == Inst){
             switch(i->inst.type){

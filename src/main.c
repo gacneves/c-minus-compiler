@@ -165,6 +165,7 @@ int main()
 
     printf("\nEnter the programs to store in HD (Max 15)\n");
 
+    proc_info = calloc(MAX_NO_PROGRAMS, sizeof(ProcInfo));
     proc_no = 0;
     do{
         printf("\nEnter Program file (0 to finish): ");
@@ -183,8 +184,7 @@ int main()
             printf("\nSuccessfully opened Program file!\n");
             
             printf("\nEnter program identifier: ");
-            scanf("%d", &id[proc_no]);
-            proc_no += 1;
+            scanf("%d", &proc_info[proc_no].id);
 
             printf("\nStarting compilation process for given program...");
 
@@ -192,14 +192,27 @@ int main()
             fclose(proc_file);
             if(!ret){
                 printf("\nProgram compilation process failed. Please fix the error if you want to try again. cMinusCompiler will still be running");
-                id[proc_no] = 0;
+                proc_info[proc_no].id = 0;
                 proc_no -= 1;
                 printf("\nRe-enter OS file: ");
             }
-            else nextAvailableTrack += 1;
+            else{
+                proc_info[proc_no].size = program_size_count;
+                proc_info[proc_no].location = nextAvailableTrack;
+                proc_no += 1;
+                nextAvailableTrack += 1;
+            }
         }while(!ret);
         printf("\n");
     }while(strcmp(filename, "0") != 0);
+
+    printf("\nPrograms compilation process finished successfully. Incrementing binary file in output/HD folder...");
+
+    printf("\n------------------------------------------------------\n");
+
+    printf("\nCreating process table...");
+
+    /* proc_info has all the info of the programs and proc_no, the quantity */
     
     return 0;
 }

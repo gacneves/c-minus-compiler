@@ -99,7 +99,6 @@ int main()
     char filename[100];
     FILE * bios_file, * os_file, * proc_file;
     int ret;
-    nextAvailableTrack = 1;
     
     printf("\nC- Compiler for MIPS based processor");
     printf("\n------------------------------------------------------");
@@ -165,6 +164,7 @@ int main()
 
     printf("\nEnter the programs to store in HD (Max 15)\n");
 
+    nextAvailableTrack = 1;
     proc_info = calloc(MAX_NO_PROGRAMS, sizeof(ProcInfo));
     proc_no = 0;
     do{
@@ -203,16 +203,20 @@ int main()
                 nextAvailableTrack += 1;
             }
         }while(!ret);
-        printf("\n");
+        if(strcmp(filename, "0") != 0) printf("\n");
     }while(strcmp(filename, "0") != 0);
 
-    printf("\nPrograms compilation process finished successfully. Incrementing binary file in output/HD folder...");
+    printf("\nPrograms compilation process finished successfully! Incrementing binary file in output/HD folder...");
 
     printf("\n------------------------------------------------------\n");
 
     printf("\nCreating process table...");
 
-    /* proc_info has all the info of the programs and proc_no, the quantity */
+    generateProcessTable("output/HD.bin");
+
+    printf("\nProcess table created successfully! HD binary file is completed and can be found in output folder.");
+
+    printf("\nFinish compilation process for all modules. Shutting it down.\n\n");
     
     return 0;
 }

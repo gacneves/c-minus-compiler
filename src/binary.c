@@ -170,3 +170,36 @@ void binaryGen(InstructionList instListHead, char * setDst, char * path){       
 
     fclose(codefile);
 }
+
+/* Function that creates the process table */
+void generateProcessTable(char * path){
+    int bit_size = 32;
+
+    FILE * codefile = fopen(path, "a");
+    char * comment = malloc(STRING_SIZE * sizeof(char));
+    strcpy(comment, "// Process Table\n");
+    fputs(comment, codefile);
+
+    opCode = 1;
+    dstModule = "HD";
+    decimalToBinaryPrint(0, proc_no, bit_size, codefile);
+    for(int i = 0; i < MAX_NO_PROGRAMS; i ++){
+        if(i < proc_no){
+            decimalToBinaryPrint(1 + (3 * i), proc_info[i].id, bit_size, codefile);
+            fprintf(codefile, "\n");
+            decimalToBinaryPrint(2 + (3 * i), proc_info[i].size, bit_size, codefile);
+            fprintf(codefile, "\n");
+            decimalToBinaryPrint(3 + (3 * i), proc_info[i].location, bit_size, codefile);
+            fprintf(codefile, "\n");
+        }
+        else{
+            decimalToBinaryPrint(1 + (3 * i), 0, bit_size, codefile);
+            fprintf(codefile, "\n");
+            decimalToBinaryPrint(2 + (3 * i), 0, bit_size, codefile);
+            fprintf(codefile, "\n");
+            decimalToBinaryPrint(3 + (3 * i), 0, bit_size, codefile);
+            fprintf(codefile, "\n");
+        }
+    }
+    decimalToBinaryPrint(46, nextAvailableTrack, bit_size, codefile);
+}

@@ -36,4 +36,16 @@ int program_size_count;
 int proc_no;
 ProcInfo * proc_info;
 
+/** For creating the process table
+ * 
+ * Process table organization: Located at the beginning of the HD (first track), the i represents the process in the table ([0:14])
+ * Sector 0 = Number of processess in the hard disk
+ * Sector i + 1 = Process ID
+ * Sector i + 2 = Process size (quantity of instructions)
+ * Sector i + 3 = Process location in hard disk
+ * Sector 46 = Next available track to allocate a process
+ * Sector 47 ~ 2047 = Operating system
+*/
+void generateProcessTable(char * path);
+
 #endif

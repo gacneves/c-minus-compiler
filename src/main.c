@@ -167,7 +167,7 @@ int main()
 
     proc_no = 0;
     do{
-        printf("\nEnter Program file (0 to quit): ");
+        printf("\nEnter Program file (0 to finish): ");
         do{
             do{
                 scanf("%s", filename);

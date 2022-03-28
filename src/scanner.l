@@ -12,7 +12,8 @@
 
 digito [0-9]
 letra [a-zA-Z]
-ID {letra}+
+underline [_]
+ID (({letra}+{underline}*{letra}+)+|{letra}+)
 NUM {digito}+
 BRANCO [ \t\r]+
 QUEBRA \n

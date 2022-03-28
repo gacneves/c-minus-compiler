@@ -2,11 +2,11 @@
 #include "analyze.h"
 #include "cgen.h"
 
-QuadList head = NULL;                   // Inicio da lista de quadruplas
-int ntemp = 0;                          // Proximo temp a ser criado
+QuadList head                           // Inicio da lista de quadruplas
+int ntemp                               // Proximo temp a ser criado
 char * tempAux, *tempAux2, * labelAux;  // Auxiliares para armazenar temporarios e labels de outras chamadas
-int nextDecl = 0;                       // Variavel para chamar prox declaracao
-int indexFlag = 0;                      // Flag para carregar o indice em caso de STORE de um vetor
+int nextDecl                            // Variavel para chamar prox declaracao
+int indexFlag                           // Flag para carregar o indice em caso de STORE de um vetor
 char * inputType;                       // Contem se a entrada é a BIOS, SO ou um programa
 
 char * newLabel(){                                                      // Funcao que cria novo label
@@ -345,6 +345,9 @@ void printCode(FILE * codefile){
 }
 
 QuadList codeGen(TreeNode * syntaxTree, char * tp){
+    ntemp = 0;
+    nextDecl = 0;
+    indexFlag = 0;
     head = NULL;
     inputType = tp;
     nlabel = 0;

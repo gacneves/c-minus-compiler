@@ -11,8 +11,8 @@ UnusedRegisterList RegListHead;         // Inicio da lista de registradores nao 
 UnusedRegisterList RegListTail;         // Fim da lista de registradores nao usados
 Register argRegister;                   // Seleciona o registrador de argumento
 int sPos;                               // Local do stack na memoria
-int globalVarLocation = 0;              // Onde colocar variaveis globais na memoria
-int lineNo = 0;                         // Numero da linha da instrucao Assembly
+int globalVarLocation                   // Onde colocar variaveis globais na memoria
+int lineNo                              // Numero da linha da instrucao Assembly
 char * currentScope;                    // Escopo atual alterado uma vez que a quadrupla FUN aparece
 int argCounter;                         // Conta quantos argumentos ainda faltam para se guardar na memoria
 int checkNotSet;                        // Flag para checagem apos comparacao logica de LET e GET (se $t for 0, entao a comparacao eh verdadeira)
@@ -689,6 +689,8 @@ void printLabelInfo(FILE * memoryFile){                                         
 }
 
 InstructionList assemblyGen(QuadList head, char * tp){
+    globalVarLocation = 0;
+    lineNo = 0;
     instListHead = NULL;
     RegListHead = NULL;
     RegListTail = NULL;
@@ -745,6 +747,7 @@ InstructionList assemblyGen(QuadList head, char * tp){
     printMemInfo(memoryFile);
     printLabelInfo(memoryFile);
     fclose(memoryFile);
+    free(labelMap);
 
     return instListHead;
 }

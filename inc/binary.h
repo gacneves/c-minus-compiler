@@ -22,7 +22,7 @@ void binaryGen(InstructionList instList, char * setDst, char * path);
 #define OPERATING_SYSTEM_SECTOR 47
 #define MAX_OPERATING_SYSTEM_SIZE 2000
 #define SECTOR_SIZE 2048
-#define NUMBER_OF_REGS_IN_CONTEXT_EXCHANGE 18
+#define NUMBER_OF_REGS_IN_CONTEXT_EXCHANGE 19
 int nextAvailableTrack;
 
 /* For compiling programs */

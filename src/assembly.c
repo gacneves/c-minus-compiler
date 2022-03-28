@@ -6,9 +6,9 @@
 #define QUANTUM 20
 #define BUFFER_REG 27
 
-InstructionList instListHead = NULL;    // Inicio da lista de instrucoes Assembly
-UnusedRegisterList RegListHead = NULL;  // Inicio da lista de registradores nao usados
-UnusedRegisterList RegListTail = NULL;  // Fim da lista de registradores nao usados
+InstructionList instListHead;           // Inicio da lista de instrucoes Assembly
+UnusedRegisterList RegListHead;         // Inicio da lista de registradores nao usados
+UnusedRegisterList RegListTail;         // Fim da lista de registradores nao usados
 Register argRegister;                   // Seleciona o registrador de argumento
 int sPos;                               // Local do stack na memoria
 int globalVarLocation = 0;              // Onde colocar variaveis globais na memoria
@@ -30,7 +30,7 @@ int searchInstLine_Label(int labelNo){      // Retorna o numero da instrucao ref
 }
 
 Register initArgRegister(){
-    return (strcmp(inputType,"ARQ")!=0) ? $c0 : $a0;
+    return (strcmp(inputType,"Process")!=0) ? $c0 : $a0;
 }
 
 Register tempRegister(char * temp){                 // Retorna o registrador temporario $t(0-7)/$s(0-7) dado a string que o representa
@@ -689,6 +689,9 @@ void printLabelInfo(FILE * memoryFile){                                         
 }
 
 InstructionList assemblyGen(QuadList head, char * tp){
+    instListHead = NULL;
+    RegListHead = NULL;
+    RegListTail = NULL;
     inputType = tp;
     labelMap = malloc(nlabel * sizeof(int));                                    // Inicializa map dos labels
     sPos = globalSize;                                                          // Inicializa o inicio da pilha
@@ -734,11 +737,11 @@ InstructionList assemblyGen(QuadList head, char * tp){
         q = q->next;
     }
 
-    FILE * codefile = fopen("outAssembly.output", "w+");
+    FILE * codefile = fopen("debug/5_Assembly.output", "w+");
     printAssembly(codefile);
     fclose(codefile);
 
-    FILE * memoryFile = fopen("outMemory.output", "w+");
+    FILE * memoryFile = fopen("debug/6_Memory.output", "w+");
     printMemInfo(memoryFile);
     printLabelInfo(memoryFile);
     fclose(memoryFile);

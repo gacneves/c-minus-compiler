@@ -18,7 +18,7 @@ char * newLabel(){                                                      // Funca
 
 char * newTemp(){                                                       // Funcao que cria novo temp
     char * temp = (char *)malloc((ntemp_size + 3) * sizeof(char));
-    if(strcmp(inputType, "ARQ") != 0)
+    if(strcmp(inputType, "Process") != 0)
         sprintf(temp, "$s%d", ntemp);
     else
         sprintf(temp, "$t%d", ntemp);
@@ -345,15 +345,16 @@ void printCode(FILE * codefile){
 }
 
 QuadList codeGen(TreeNode * syntaxTree, char * tp){
+    head = NULL;
     inputType = tp;
     nlabel = 0;
     globalSize = 0;
     cGen(syntaxTree);
-    if(strcmp(inputType, "ARQ") == 0)
+    if(strcmp(inputType, "Process") == 0)
         quadInsert("FINALIZE", "-", "-", "-");
     else
         quadInsert("HLT", "-", "-", "-");
-    FILE * codefile = fopen("outQuadList.output", "w+");
+    FILE * codefile = fopen("debug/4_QuadList.output", "w+");
     printCode(codefile);
     fclose(codefile);
     return head;

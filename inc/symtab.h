@@ -31,4 +31,29 @@ int searchInstLine_Fun(char * name);
 // Print apenas das informacoes de memoria
 void printMemInfo();
 
+// Estrutura para armazenar a linhas em que o token aparece
+typedef struct LineListRec{  
+    int lineno;
+    struct LineListRec * next;  
+} * LineList;
+
+// Estrutura para armazenar as informações nas posições da tabela hash
+typedef struct BucketListRec{ 
+    char* name;
+    LineList lines;
+    char* scope;
+    char* typeID;
+    char* typeData;
+    int paramQt;
+    int loc;
+    int size;
+    int * instLine;
+    struct BucketListRec * next;     
+} * BucketList;
+
+#define SIZE 997 // Tamanho da tabela (num primo)
+#define SHIFT 4 // Peso dos caracteres para o hash
+
+BucketList hashTable[SIZE];
+
 #endif

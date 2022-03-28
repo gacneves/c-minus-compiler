@@ -2,9 +2,10 @@
 #include "binary.h"
 #include "symtab.h"
 
-BinaryList binListHead = NULL;                                      // Inicio da lista de instrucoes binarias
+BinaryList binListHead;                                      // Inicio da lista de instrucoes binarias
 int opCode;
 char * dstModule;
+char * compilingName;
 
 void decimalToBinaryPrint(int i, int number, int bitNo, FILE * binFile){   // Funcao que converte decimal em binario para print das instrucoes
     char * binary = malloc(bitNo * sizeof(char));                   // Char para representar o binario de tamanho bitsNo
@@ -66,10 +67,17 @@ void binaryGen_J_Type(Instruction inst){                                        
 }
 
 void printBinary(FILE * binFile){                                               // Funcao que printa as instrucao binarias
-    int i = 0;
+    int i;
+
+    if(strcmp(compilingName, "BIOS") == 0) i = 0;
+    else{
+        if(strcmp(compilingName, "Operating System") == 0) i = OPERATING_SYSTEM_SECTOR;
+        else i = (nextAvailableTrack * SECTOR_SIZE) + NUMBER_OF_REGS_IN_CONTEXT_EXCHANGE;
+    }
     opCode = 1;
     BinaryList b = binListHead;
     while(b != NULL){
+        program_size_count += 1;
         switch(b->bin.type){
             case R:
                 decimalToBinaryPrint(i,b->bin.opCode, 6, binFile);
@@ -104,10 +112,33 @@ void printBinary(FILE * binFile){                                               
     }
 }
 
-void binaryGen(InstructionList instListHead, char * setDst){                                                                               // Gerador de codigo binario
+void binaryGen(InstructionList instListHead, char * setDst, char * path){                                                                               // Gerador de codigo binario
     InstructionList i = instListHead;
-    dstModule = (strcmp(setDst, "BIOS") == 0) ? "BIOS" : "HD";
+    binListHead = NULL;
+    FILE * codefile;
 
+    compilingName = setDst;
+    if(strcmp(setDst, "BIOS") == 0){
+        codefile = fopen(path, "w+");
+        dstModule = "BIOS";
+    }
+    else{
+        codefile = fopen(path, "a");
+        dstModule = "HD";
+        char * comment = malloc(STRING_SIZE * sizeof(char));
+        strcpy(comment, "// ");
+        strcat(comment, setDst);
+        if(strcmp(setDst, "Process") == 0){
+            strcat(comment, " ");
+            char * number = malloc(STRING_SIZE * sizeof(char));
+            sprintf(number, "%d", proc_info[proc_no].id);
+            strcat(comment, number);
+        }
+        strcat(comment, "\n");
+        fputs(comment, codefile);
+    }
+
+    program_size_count = 0;
     while(i != NULL){
         if(i->inst.lineKind == Inst){
             switch(i->inst.type){
@@ -134,7 +165,41 @@ void binaryGen(InstructionList instListHead, char * setDst){                    
         i = i->next;
     }
 
-    FILE * codefile = fopen("outBinary.output", "w+");
     printBinary(codefile);
+    if(strcmp(setDst, "BIOS") != 0) fprintf(codefile, "\n");
+
     fclose(codefile);
+}
+
+/* Function that creates the process table */
+void generateProcessTable(char * path){
+    int bit_size = 32;
+
+    FILE * codefile = fopen(path, "a");
+    char * comment = malloc(STRING_SIZE * sizeof(char));
+    strcpy(comment, "// Process Table\n");
+    fputs(comment, codefile);
+
+    opCode = 1;
+    dstModule = "HD";
+    decimalToBinaryPrint(0, proc_no, bit_size, codefile);
+    for(int i = 0; i < MAX_NO_PROGRAMS; i ++){
+        if(i < proc_no){
+            decimalToBinaryPrint(1 + (3 * i), proc_info[i].id, bit_size, codefile);
+            fprintf(codefile, "\n");
+            decimalToBinaryPrint(2 + (3 * i), proc_info[i].size, bit_size, codefile);
+            fprintf(codefile, "\n");
+            decimalToBinaryPrint(3 + (3 * i), proc_info[i].location, bit_size, codefile);
+            fprintf(codefile, "\n");
+        }
+        else{
+            decimalToBinaryPrint(1 + (3 * i), 0, bit_size, codefile);
+            fprintf(codefile, "\n");
+            decimalToBinaryPrint(2 + (3 * i), 0, bit_size, codefile);
+            fprintf(codefile, "\n");
+            decimalToBinaryPrint(3 + (3 * i), 0, bit_size, codefile);
+            fprintf(codefile, "\n");
+        }
+    }
+    decimalToBinaryPrint(46, nextAvailableTrack, bit_size, codefile);
 }

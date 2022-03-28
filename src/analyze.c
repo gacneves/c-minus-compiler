@@ -3,16 +3,16 @@
 #include "symtab.h"
 #include "analyze.h"
 
-static void typeError(TreeNode * t, char * message){ //Escreve o erro no console
+void typeError(TreeNode * t, char * message){ //Escreve o erro no console
     printf("ERRO SEMANTICO: %s LINHA: %d (%s)\n",t->attr.name, t->lineno, message);
     Error = TRUE;
 }
 
-static int tmp_param = 0; // Variavel para contar os parametro das funções
-static int lastFunMain = 0; // Flag para declaracao da funcao main como ultima funcao declarada
+int tmp_param = 0; // Variavel para contar os parametro das funções
+int lastFunMain = 0; // Flag para declaracao da funcao main como ultima funcao declarada
 
 // Funcao recursiva para percorrer a arvore
-static void traverse(TreeNode * t, void (* preProc) (TreeNode *), void (* postProc) (TreeNode *)){ 
+void traverse(TreeNode * t, void (* preProc) (TreeNode *), void (* postProc) (TreeNode *)){ 
 
     if (t != NULL){ 
         preProc(t);{ 
@@ -39,14 +39,14 @@ int paramCounter(TreeNode *t){ // Funcao para contar os parametros
 }
 
 // Funcao faz-nada (gera pre-ordem e pos-ordem)
-static void nullProc(TreeNode * t){ 
+void nullProc(TreeNode * t){ 
     if (t==NULL) 
         return;
     else 
         return;
 }
 
-static void insertNode( TreeNode * t){ // Funcao para insercao na tabela de simbolos
+void insertNode( TreeNode * t){ // Funcao para insercao na tabela de simbolos
     
     switch (t->nodekind){ 
 
@@ -160,6 +160,9 @@ static void insertNode( TreeNode * t){ // Funcao para insercao na tabela de simb
 }
 
 void buildSymtab(TreeNode * syntaxTree){    // Cria tabela de simbolos
+    lastFunMain = 0;
+    for(int i = 0; i < SIZE; i ++)
+        hashTable[i] = NULL;
     traverse(syntaxTree, insertNode, nullProc); 
     if(!st_lookup("main", "global")){
         printf("ERRO SEMANTICO: Funcao main nao declarada.");
@@ -169,7 +172,7 @@ void buildSymtab(TreeNode * syntaxTree){    // Cria tabela de simbolos
     printSymTab();
 }
 
-static void checkNode(TreeNode * t){ // Checa os tipos
+ void checkNode(TreeNode * t){ // Checa os tipos
     switch (t->nodekind){ 
         case statementX:
             switch (t->kind.stmt){ 

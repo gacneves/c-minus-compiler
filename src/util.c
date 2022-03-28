@@ -190,6 +190,23 @@ void printTree(TreeNode * tree, FILE * f_out){ // Print da arvore gerada (recurs
 	UNINDENT;
 }
 
+int dirExists(char * path){
+	struct stat stats;
+
+	stat(path, &stats);
+
+	if(S_ISDIR(stats.st_mode))
+		return 1;
+
+	return 0;
+}
+
+int makeDir(char * path){
+	if(!mkdir(path, 0777)) return 1;
+
+	return 0;
+}
+
 // Syscalls
 const char * syscallList[] = {"input", "output", "preempON", "preempOFF", "memCtrl", "hdToInst", "hdToReg", "regToHd", "storeVar", "setPC", "setRunningId", "halt"};
 const int syscallParamQtList[] = {0, 1, 0, 0, 0, 3, 3, 3, 3, 0, 1, 0};

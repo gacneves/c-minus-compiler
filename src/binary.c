@@ -183,6 +183,7 @@ void generateProcessTable(char * path){
     opCode = 1;
     dstModule = "HD";
     decimalToBinaryPrint(0, proc_no, bit_size, codefile);
+    fprintf(codefile, "\n");
     for(int i = 0; i < MAX_NO_PROGRAMS; i ++){
         if(i < proc_no){
             decimalToBinaryPrint(1 + (3 * i), proc_info[i].id, bit_size, codefile);

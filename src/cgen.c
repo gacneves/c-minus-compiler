@@ -2,11 +2,11 @@
 #include "analyze.h"
 #include "cgen.h"
 
-QuadList head                           // Inicio da lista de quadruplas
-int ntemp                               // Proximo temp a ser criado
+QuadList head;                          // Inicio da lista de quadruplas
+int ntemp;                              // Proximo temp a ser criado
 char * tempAux, *tempAux2, * labelAux;  // Auxiliares para armazenar temporarios e labels de outras chamadas
-int nextDecl                            // Variavel para chamar prox declaracao
-int indexFlag                           // Flag para carregar o indice em caso de STORE de um vetor
+int nextDecl;                           // Variavel para chamar prox declaracao
+int indexFlag;                          // Flag para carregar o indice em caso de STORE de um vetor
 char * inputType;                       // Contem se a entrada é a BIOS, SO ou um programa
 
 char * newLabel(){                                                      // Funcao que cria novo label

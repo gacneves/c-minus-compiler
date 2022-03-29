@@ -203,4 +203,5 @@ void generateProcessTable(char * path){
         }
     }
     decimalToBinaryPrint(46, nextAvailableTrack, bit_size, codefile);
+    fprintf(codefile, ";\n");
 }

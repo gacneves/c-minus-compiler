@@ -747,7 +747,6 @@ InstructionList assemblyGen(QuadList head, char * tp){
     printMemInfo(memoryFile);
     printLabelInfo(memoryFile);
     fclose(memoryFile);
-    free(labelMap);
 
     return instListHead;
 }

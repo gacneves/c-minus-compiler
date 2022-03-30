@@ -200,7 +200,7 @@ void buildSymtab(TreeNode * syntaxTree){    // Cria tabela de simbolos
                 case assignX:
                     if (t->child[0]->type == voidX || t->child[1]->type == voidX) // Atribuir variável void
                         typeError(t->child[0],"Atribuicao invalida de dado");
-                    else if(t->child[1]->kind.stmt == callX && strcmp(t->child[1]->attr.name, "input") != 0){ // Funcao retorna void
+                    else if(t->child[1]->kind.stmt == callX && strcmp(t->child[1]->attr.name, "input") != 0 && strcmp(t->child[1]->attr.name, "hdRead") != 0){ // Funcao retorna void
                         if(strcmp(st_lookup_tp(t->child[1]->attr.name, "global"), "inteiro"))
                             typeError(t->child[1],"Atribuicao invalida de dado: Funcao do tipo void");
                     }

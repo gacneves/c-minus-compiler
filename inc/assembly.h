@@ -8,7 +8,7 @@ typedef enum{
 }InstructionKind;
 
 typedef enum{   
-    $zero, $t0, $t1, $t2, $t3, $t4, $t5, $t6, $t7, $a0, $a1, $a2, $a3, $a4, $ad, $s0, $s1, $s2, $s3, $s4, $s5, $s6, $s7, $c0, $c1, $c2, $id, $pc, $sp, $v0, $md, $ra
+    $zero, $t0, $t1, $t2, $t3, $t4, $t5, $t6, $t7, $a0, $a1, $a2, $a3, $a4, $ad, $s0, $s1, $s2, $s3, $s4, $s5, $s6, $s7, $c0, $c1, $c2, $id, $bf, $sp, $v0, $md, $ra
 }Register;
 // $zero: possui sempre o valor 0
 // $t: registradores temporarios

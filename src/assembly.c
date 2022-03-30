@@ -134,8 +134,8 @@ char * registerToString(Register r){        // Transforma registradores em strin
         case $id:
             strcpy(reg,"$id");
             break;
-        case $pc:
-            strcpy(reg,"$pc");
+        case $bf:
+            strcpy(reg,"$bf");
             break;
         case $ad:
             strcpy(reg,"$ad");
@@ -302,7 +302,7 @@ void assemblyGen_CALL(Quad q){                                                  
         argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
     else if(strcmp(q.arg2,"storeVar") == 0){                                                // Se for a funcao storeVar
-        assemblyInsert(ADD, $pc, $zero, $c0, 0, lineNo, R, Inst, "");                       // Insere-se a instrução ADDI, para escrever no registrador $a0 o numero do registrador de buffer $bf
+        assemblyInsert(ADD, $bf, $zero, $c0, 0, lineNo, R, Inst, "");                       // Insere-se a instrução ADDI, para escrever no registrador $a0 o numero do registrador de buffer $bf
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
         assemblyInsert(ADDI, $c0, $zero, 0, BUFFER_REG, lineNo, I, Inst, "");                       // Insere-se a instrução ADDI, para escrever no registrador $a0 o numero do registrador de buffer $bf
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
@@ -311,7 +311,7 @@ void assemblyGen_CALL(Quad q){                                                  
         argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
     else if(strcmp(q.arg2,"setPC") == 0){                                                   // Se for a funcao setPC
-        assemblyInsert(JR, $pc, 0, 0, 0, lineNo, R, Inst, "");                              // Insere-se a instrução ADD, para escrever no registrador $bf de buffer de troca de dados entre o HD, a variavel desejada
+        assemblyInsert(JR, $bf, 0, 0, 0, lineNo, R, Inst, "");                              // Insere-se a instrução ADD, para escrever no registrador $bf de buffer de troca de dados entre o HD, a variavel desejada
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
     }
         else if(strcmp(q.arg2,"setRunningId") == 0){                                        // Se for a funcao setRunningId
@@ -321,6 +321,18 @@ void assemblyGen_CALL(Quad q){                                                  
     }
     else if(strcmp(q.arg2,"halt") == 0){                                                    // Se for a funcao halt
         assemblyInsert(HLT, 0, 0, 0, 0, lineNo, O, Inst, "");                               // Insere-se a instrucao HLT que para o funcionamento do processador
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+    }
+    else if(strcmp(q.arg2,"hdRead") == 0){                                                  // Se for a funcao hdRead
+        assemblyInsert(ADD, $c2, $zero, $c1, 0, lineNo, R, Inst, "");                       // Insere-se a instrução ADDI, para escrever no registrador $a0 o numero do registrador de buffer $bf
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        assemblyInsert(ADD, $c1, $zero, $c0, 0, lineNo, R, Inst, "");                       // Insere-se a instrução ADDI, para escrever no registrador $a0 o numero do registrador de buffer $bf
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        assemblyInsert(ADDI, $c0, $zero, 0, BUFFER_REG, lineNo, I, Inst, "");               // Insere-se a instrução ADDI, para escrever no registrador $a0 o numero do registrador de buffer $bf
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        assemblyInsert(HDTOREG, $c0, $c1, $c2, 0, lineNo, R, Inst, "");                     // Insere-se a instrução HDTOREG, para escrever do HD no banco de registradores
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        assemblyInsert(ADD, tempRegister(q.arg1), $zero, $bf, 0, lineNo, R, Inst, "");      // Insere-se a instrucao IN salvando o valor no registrador temp
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
     }
     else{                                                                                   // Se nao for a funcao input ou output

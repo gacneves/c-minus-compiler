@@ -208,8 +208,8 @@ int makeDir(char * path){
 }
 
 // Syscalls
-const char * syscallList[] = {"input", "output", "preempON", "preempOFF", "memCtrl", "hdToInst", "hdToReg", "regToHd", "storeVar", "setPC", "setRunningId", "halt", "hdRead"};
-const int syscallParamQtList[] = {0, 1, 0, 0, 0, 3, 3, 3, 3, 0, 1, 0, 2};
+const char * syscallList[] = {"input", "output", "preempON", "preempOFF", "memCtrl", "hdToInst", "hdToReg", "regToHd", "storeVar", "setPC", "setProgramId", "halt", "hdRead", "LCDWrite"};
+const int syscallParamQtList[] = {0, 1, 0, 0, 0, 3, 3, 3, 3, 1, 1, 0, 2, 2};
 
 /*
 input(), retorna um valor inserido atraves das chaves do FPGA

@@ -274,6 +274,11 @@ void assemblyGen_CALL(Quad q){                                                  
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
         argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
+    else if(strcmp(q.arg2,"LCDWrite") == 0){                                                // Se for a funcao LCDWrite
+        assemblyInsert(LCDWRITE, $c0, $c1, 0, 0, lineNo, I, Inst, "");                      // Insere-se a instrucao LCDWRITE passando o numero a ser escrito, caso necessario, e a string a ser escrita
+        lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
+    }
     else if(strcmp(q.arg2,"preempON") == 0){                                                // Se for a funcao preempON
         assemblyInsert(PREEMPON, 0, 0, 0, 0, lineNo, O, Inst, "");                          // Insere-se a instrução PREEMPON, para iniciar a contagem do timer de quantum
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
@@ -311,11 +316,12 @@ void assemblyGen_CALL(Quad q){                                                  
         argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
     else if(strcmp(q.arg2,"setPC") == 0){                                                   // Se for a funcao setPC
-        assemblyInsert(JR, $bf, 0, 0, 0, lineNo, R, Inst, "");                              // Insere-se a instrução ADD, para escrever no registrador $bf de buffer de troca de dados entre o HD, a variavel desejada
+        assemblyInsert(JR, $c0, 0, 0, 0, lineNo, R, Inst, "");                              // Insere-se a instrução ADD, para escrever no registrador $bf de buffer de troca de dados entre o HD, a variavel desejada
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
-        else if(strcmp(q.arg2,"setRunningId") == 0){                                        // Se for a funcao setRunningId
-        assemblyInsert(ADD, $id, $zero, $c0, 0, lineNo, R, Inst, "");                       // Insere-se a instrução ADD, para escrever no registrador $id o identificador do processo que esta rodando
+    else if(strcmp(q.arg2,"setProgramId") == 0){                                            // Se for a funcao setRunningId
+        assemblyInsert(SETPROGID, $c0, 0, 0, 0, lineNo, R, Inst, "");                       // Insere-se a instrução ADD, para escrever no registrador $id o identificador do processo que esta rodando
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
         argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
@@ -334,6 +340,7 @@ void assemblyGen_CALL(Quad q){                                                  
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
         assemblyInsert(ADD, tempRegister(q.arg1), $zero, $bf, 0, lineNo, R, Inst, "");      // Insere-se a instrucao IN salvando o valor no registrador temp
         lineNo++;                                                                           // Soma-se o numero da linha de instrucao
+        argRegister = initArgRegister();                                                    // Reinicializa o registrador de argumento como $a0 (o primeiro a ser passado) para uso posterior
     }
     else{                                                                                   // Se nao for a funcao input ou output
         // Empilha registradores que ainda nao foram utilizados
@@ -674,6 +681,12 @@ void printAssembly(FILE * assemblyFile){ // Funcao para print do codigo Assembly
                         break;
                     case REGTOHD:
                         fprintf(assemblyFile, "%d %s %s, %s, %s\n", i->inst.lineNo, "REGTOHD", registerToString(i->inst.rd), registerToString(i->inst.rs), registerToString(i->inst.rt));
+                        break;
+                    case LCDWRITE:
+                        fprintf(assemblyFile, "%d %s %s, %s\n", i->inst.lineNo, "LCDWRITE", registerToString(i->inst.rd), registerToString(i->inst.rs));
+                        break;
+                    case SETPROGID:
+                        fprintf(assemblyFile, "%d %s %s\n", i->inst.lineNo, "SETPROGID", registerToString(i->inst.rd));
                         break;
                     default:
                         break;

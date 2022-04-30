@@ -4,7 +4,7 @@
 #include "analyze.h"
 
 void typeError(TreeNode * t, char * message){ //Escreve o erro no console
-    printf("ERRO SEMANTICO: %s LINHA: %d (%s)\n",t->attr.name, t->lineno, message);
+    printf("\nERRO SEMANTICO: %s LINHA: %d (%s)",t->attr.name, t->lineno, message);
     Error = TRUE;
 }
 
